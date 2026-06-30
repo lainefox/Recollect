@@ -326,9 +326,13 @@ public class MainWindow : Adw.ApplicationWindow {
 		var preview_open_btn = new Gtk.Button.from_icon_name("external-link-symbolic");
 		preview_open_btn.add_css_class("flat");
 		preview_open_btn.tooltip_text = _("Open externally");
+		var preview_copy_btn = new Gtk.Button.from_icon_name("edit-copy-symbolic");
+		preview_copy_btn.add_css_class("flat");
+		preview_copy_btn.tooltip_text = _("Copy image to clipboard");
 		preview_close_btn.clicked.connect(() => hide_preview_sidebar());
 		preview_folder_btn.clicked.connect(() => open_containing_folder());
 		preview_open_btn.clicked.connect(() => open_current_file());
+		preview_copy_btn.clicked.connect(() => copy_current_image());
 
 			// --- Preview NavigationPage ---
 			var preview_header = new Adw.HeaderBar();
@@ -336,6 +340,7 @@ public class MainWindow : Adw.ApplicationWindow {
 			preview_header.pack_start(preview_close_btn);
 			preview_header.pack_end(preview_open_btn);
 			preview_header.pack_end(preview_folder_btn);
+			preview_header.pack_end(preview_copy_btn);
 
 			var preview_toolbar = new Adw.ToolbarView();
 			preview_toolbar.add_top_bar(preview_header);
@@ -1102,6 +1107,20 @@ public class MainWindow : Adw.ApplicationWindow {
 						AppInfo.launch_default_for_uri(uri, null);
 				} catch(Error e) {
 						warning("Failed to open file: %s", e.message);
+				}
+		}
+
+// Copy the currently selected image to the clipboard.
+		public void copy_current_image() {
+				if(current_selected_entry == null) {
+						return;
+				}
+				try {
+						var texture = Gdk.Texture.from_filename(current_selected_entry.path);
+						var clipboard = Gdk.Display.get_default().get_clipboard();
+						clipboard.set_texture(texture);
+				} catch(Error e) {
+						warning("Failed to copy image to clipboard: %s", e.message);
 				}
 		}
 
