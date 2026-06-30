@@ -1,0 +1,4 @@
+option('profile', type: 'combo', choices: ['default', 'development'], value: 'default',
+			 description: 'Profile to build (development or default)')
+option('enable-i18n', type: 'boolean', value: true,
+			 description: 'Enable internationalization support')

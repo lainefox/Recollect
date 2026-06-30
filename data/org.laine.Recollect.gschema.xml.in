@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="@GETTEXT_PACKAGE@">
+	<schema id="org.laine.Recollect" path="/org/laine/Recollect/">
+
+		<!-- Array of folder paths to scan -->
+		<key type="as" name="folders">
+			<default>[]</default>
+			<summary>Folders to scan for images</summary>
+			<description>List of folder paths that Recollect should scan for images</description>
+		</key>
+
+		<!-- OCR accuracy level: fast, balanced, best -->
+		<key type="s" name="ocr-accuracy">
+			<default>'balanced'</default>
+			<summary>OCR accuracy level</summary>
+			<description>OCR accuracy level: 'fast', 'balanced', or 'best'</description>
+		</key>
+
+		<!-- Language codes (e.g., "eng", "eng+deu") -->
+		<key type="s" name="ocr-language">
+			<default>'eng'</default>
+			<summary>OCR language</summary>
+			<description>Language code or combination (e.g., 'eng', 'eng+deu') for OCR</description>
+		</key>
+
+		<!-- Available languages detected from tesseract (cached) -->
+		<key type="as" name="available-languages">
+			<default>[]</default>
+			<summary>Available OCR languages</summary>
+			<description>List of language codes available from tesseract installation</description>
+		</key>
+
+		<!-- View mode: list or grid -->
+		<key type="s" name="view-mode">
+			<default>'list'</default>
+			<summary>View mode</summary>
+			<description>Display mode for search results: 'list' or 'grid'</description>
+		</key>
+
+		<!-- Last scan timestamp -->
+		<key type="x" name="last-scan-time">
+			<default>0</default>
+			<summary>Last scan timestamp</summary>
+			<description>Unix timestamp of the most recent scan</description>
+		</key>
+
+		<!-- Scan on startup -->
+		<key type="b" name="scan-on-startup">
+			<default>true</default>
+			<summary>Scan on startup</summary>
+			<description>Automatically scan configured folders when the app starts</description>
+		</key>
+
+		<!-- Enable background scanning when app is not visible -->
+		<key type="b" name="background-scan">
+			<default>true</default>
+			<summary>Background scanning enabled</summary>
+			<description>Continue scanning even when the app is minimized or backgrounded</description>
+		</key>
+
+		<!-- Enable incremental file monitoring -->
+		<key type="b" name="incremental-scan">
+			<default>true</default>
+			<summary>Incremental scanning enabled</summary>
+			<description>Monitor folders for changes and update index automatically</description>
+		</key>
+
+		<!-- Sidebar visible state -->
+		<key type="b" name="sidebar-visible">
+			<default>true</default>
+			<summary>Sidebar visible</summary>
+			<description>Whether the preview sidebar is shown by default</description>
+		</key>
+
+		<!-- Onboarding completed -->
+		<key type="b" name="onboarding-completed">
+			<default>false</default>
+			<summary>Onboarding wizard completed</summary>
+			<description>Whether the user has completed the first-launch onboarding wizard</description>
+		</key>
+
+		<!-- Search filter options -->
+		<key type="b" name="fuzzy-search">
+			<default>true</default>
+			<summary>Fuzzy search enabled</summary>
+			<description>Use fuzzy matching when searching image text content</description>
+		</key>
+
+		<key type="b" name="match-case">
+			<default>false</default>
+			<summary>Case-sensitive search</summary>
+			<description>Match case when searching image text content</description>
+		</key>
+
+		<key type="b" name="match-diacritics">
+			<default>false</default>
+			<summary>Match diacritics</summary>
+			<description>Distinguish between accented and unaccented characters when searching</description>
+		</key>
+
+		<key type="b" name="whole-words">
+			<default>false</default>
+			<summary>Whole words only</summary>
+			<description>Only match whole words when searching image text content</description>
+		</key>
+
+		<!-- Scan hidden folders -->
+		<key type="b" name="scan-hidden-folders">
+			<default>false</default>
+			<summary>Scan hidden folders</summary>
+			<description>Whether to scan hidden (dot) folders during file discovery</description>
+		</key>
+
+	</schema>
+</schemalist>

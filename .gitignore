@@ -1,0 +1,66 @@
+# Build directories
+build/
+builddir/
+_build/
+
+# Meson build artifacts
+builddir/
+subprojects/*/cache/
+
+# Compiled objects and binaries
+*.o
+*.so
+*.so.*
+*.a
+*.la
+*.lo
+*.gir
+*.typelib
+*.vapi.h
+
+# Vala compilation artifacts
+*.c
+!src/Vapi/*.c
+*.vala.stamp
+
+# Gettext
+po/*.gmo
+po/*.mo
+po/recollect.pot
+
+# GSettings schema compilation
+gschemas.compiled
+data/gschemas.compiled
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.code-workspace
+
+# Agent instructions (project-specific, not committed)
+CLAUDE.md
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Distribution
+*.tar.gz
+*.tar.xz
+*.zip
+
+# Dependency subprojects
+subprojects/
+!subprojects/*.wrap
+!subprojects/packagefiles/
+
+# Runtime/cache files
+*.db
+*.log

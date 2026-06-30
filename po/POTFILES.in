@@ -1,0 +1,21 @@
+# Source files for translation
+src/Application.vala
+src/MainWindow.vala
+src/PreferencesDialog.vala
+src/OnboardingDialog.vala
+src/Models/ImageEntry.vala
+src/Models/Folder.vala
+src/Models/SortConfig.vala
+src/Services/SettingsService.vala
+src/Services/DatabaseService.vala
+src/Services/OcrService.vala
+src/Services/ScannerService.vala
+src/Services/SearchService.vala
+src/Services/TesseractModelService.vala
+src/Utils/Utils.vala
+src/Views/ResultRow.vala
+src/Views/ResultsListView.vala
+src/Views/ResultsGridView.vala
+src/Views/ImagePreviewSidebar.vala
+src/DownloadModelsDialog.vala
+data/org.laine.Recollect.gschema.xml.in

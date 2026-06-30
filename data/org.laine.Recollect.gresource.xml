@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+	<gresource prefix="/org/laine/Recollect">
+		<!-- In-app action icons (registered via IconTheme.add_resource_path) -->
+		<file>icons/scalable/actions/view-list-symbolic.svg</file>
+		<file>icons/scalable/actions/view-grid-symbolic.svg</file>
+		<file>icons/scalable/actions/funnel-symbolic.svg</file>
+		<file>icons/scalable/actions/language-symbolic.svg</file>
+		<file>icons/scalable/actions/folder-download-symbolic.svg</file>
+		<file>icons/scalable/actions/check-round-outline-symbolic.svg</file>
+		<file>icons/scalable/actions/text-insert-symbolic.svg</file>
+
+		<!-- CSS -->
+		<file>style.css</file>
+
+		<!-- Shortcuts window (UI file from src/ui/) -->
+		<file preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
+	</gresource>
+</gresources>

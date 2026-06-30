@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Recollect
+Comment=Search for text inside your images with powerful OCR technology
+Exec=recollect
+Icon=@APP_ID@
+Terminal=false
+Type=Application
+Categories=GTK;Utility;
+Keywords=OCR;search;image;text;

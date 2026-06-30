@@ -1,0 +1,59 @@
+.results-list, .results-grid {
+	background: transparent;
+}
+
+.results-list row {
+	/* No margin — it confuses GtkColumnView's internal row height
+		 calculations during scrollbar transitions */
+	border-radius: 8px;
+	min-height: 32px;
+}
+.results-list cell {
+	/* No padding — CSS padding on GtkColumnViewCell is subtracted from
+		 its allocation, making negative heights worse during relayout.
+		 Spacing is set via widget margins on the factory children instead. */
+	background: transparent;
+	margin: 0;
+	border-radius: 8px;
+	min-height: 12px;
+}
+
+/* Results grid view tiles */
+.tile-image {
+	border-radius: 8px;
+}
+.tile-selected {
+	border: 3px solid @accent_bg_color;
+	border-radius: 8px;
+}
+
+.image-preview-sidebar image {
+	margin: 12px;
+}
+
+/* Search entry with overlaid filter button.
+ * padding-right reserves extra space so typed text doesn't overlap
+ * the funnel button. SearchEntry already has ~30px internal padding
+ * for its built-in clear (X) icon, so we only need ~28px more for
+ * the 24px-wide funnel button + a small gap.
+ *
+ * ADJUST IF: text overlaps the funnel → increase padding-right.
+ *             too much gap between text and icons → decrease. */
+.search-with-filter {
+	padding-right: 8px;
+}
+
+/* Filter button overlaid inside search entry (right-aligned).
+ * margin-right pushes the button LEFT from the right edge of the
+ * entry, positioning it just LEFT of the SearchEntry's built-in
+ * clear (X) icon. The X icon occupies ~30px from the right edge.
+ *
+ * ADJUST IF: funnel overlaps the X icon → increase margin-right.
+ *             funnel too far from X icon → decrease margin-right. */
+.search-filter-btn {
+	min-width: 24px;
+	min-height: 24px;
+	padding: 2px;
+	margin-right: 28px;
+	-gtk-icon-size: 14px;
+}
