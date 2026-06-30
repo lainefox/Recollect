@@ -219,7 +219,7 @@ public class MainWindow : Adw.ApplicationWindow {
 
 			// Stack for switching between states
 			stack = new Gtk.Stack();
-			stack.transition_type = Gtk.StackTransitionType.CROSSFADE;
+			stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
 			stack.hexpand = true;
 			stack.vexpand = true;
 
@@ -292,7 +292,7 @@ public class MainWindow : Adw.ApplicationWindow {
 			stack.add_named(search_state_box, "searching");
 
 			view_stack = new Gtk.Stack();
-			view_stack.transition_type = Gtk.StackTransitionType.CROSSFADE;
+			view_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
 			view_stack.hexpand = true;
 			view_stack.vexpand = true;
 			view_stack.add_named(list_view, "list");
@@ -309,7 +309,7 @@ public class MainWindow : Adw.ApplicationWindow {
 
 			// --- Sidebar stack contains only the preview sidebar ---
 			sidebar_stack = new Gtk.Stack();
-			sidebar_stack.transition_type = Gtk.StackTransitionType.CROSSFADE;
+			sidebar_stack.transition_type = Gtk.StackTransitionType.SLIDE_LEFT_RIGHT;
 			sidebar_stack.hexpand = true;
 			sidebar_stack.vexpand = true;
 			sidebar_stack.add_named(preview_sidebar, "preview");

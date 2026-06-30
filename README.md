@@ -46,6 +46,34 @@ meson install -C build
 
 The binary is installed to `~/.local/bin/recollect`.
 
+## Troubleshooting
+
+### `libgom.so.0: cannot open shared object file`
+
+If you see this error at runtime, the dynamic linker can't find the Gom library.
+Rebuild with the rpath fix applied (already included if you're using the latest
+build files):
+
+```bash
+meson setup build --prefix="$HOME/.local" --reconfigure
+meson compile -C build
+meson install -C build
+```
+
+Alternatively, set `LD_LIBRARY_PATH`:
+
+```bash
+export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
+~/.local/bin/recollect
+```
+
+### Subproject `gom-vala` has no `meson.build` file
+
+If `meson setup` fails with this error, it means the `subprojects/gom-vala/`
+directory is missing its top-level `meson.build`. Ensure the repository includes
+`subprojects/gom-vala/meson.build` and `subprojects/gom-vala/gom/meson.build`
+with the correct include directory (pointing to `'.'`, not `'..'`).
+
 ### Development profile
 
 Use a separate application ID (`org.laine.Recollect.Devel`) so development builds

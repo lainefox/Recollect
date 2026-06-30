@@ -87,5 +87,6 @@ executable('recollect',
   ],
   dependencies: recollect_deps,
   install: true,
+  install_rpath: prefix / get_option('libdir'),
   win_subsystem: 'windows',
 )
