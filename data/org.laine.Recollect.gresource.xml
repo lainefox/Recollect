@@ -12,8 +12,5 @@
 
 		<!-- CSS -->
 		<file>style.css</file>
-
-		<!-- Shortcuts window (UI file from src/ui/) -->
-		<file preprocess="xml-stripblanks">shortcuts-dialog.ui</file>
 	</gresource>
 </gresources>

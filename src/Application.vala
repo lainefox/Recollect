@@ -282,16 +282,38 @@ public class Application : Adw.Application {
 				}
 		}
 
-// Action: Show keyboard shortcuts window
+// Action: Show keyboard shortcuts dialog
 		private void action_shortcuts() {
-				try {
-						var builder = new Gtk.Builder.from_resource("/org/laine/Recollect/shortcuts-dialog.ui");
-						var window =(Gtk.ShortcutsWindow) builder.get_object("shortcuts");
-						window.set_transient_for(get_active_window());
-						window.present();
-				} catch(Error e) {
-						warning("Failed to load shortcuts window: %s", e.message);
-				}
+				var dialog = new Adw.ShortcutsDialog();
+
+				// ── General ──
+				var general_section = new Adw.ShortcutsSection(_("General"));
+				general_section.add(new Adw.ShortcutsItem.from_action(_("Quit"), "app.quit"));
+				general_section.add(new Adw.ShortcutsItem.from_action(_("Preferences"), "app.preferences"));
+				general_section.add(new Adw.ShortcutsItem.from_action(_("Refresh / Rescan"), "app.rescan"));
+				general_section.add(new Adw.ShortcutsItem.from_action(_("Open File"), "app.open-file"));
+				dialog.add(general_section);
+
+				// ── Search ──
+				var search_section = new Adw.ShortcutsSection(_("Search"));
+				search_section.add(new Adw.ShortcutsItem(_("Focus Search Bar"), "<Control>l"));
+				search_section.add(new Adw.ShortcutsItem.from_action(_("Clear Search"), "app.clear-search"));
+				search_section.add(new Adw.ShortcutsItem.from_action(_("Search Filters"), "app.open-filter-popover"));
+				dialog.add(search_section);
+
+				// ── Preview ──
+				var preview_section = new Adw.ShortcutsSection(_("Preview"));
+				preview_section.add(new Adw.ShortcutsItem.from_action(_("Focus Preview"), "app.focus-preview"));
+				preview_section.add(new Adw.ShortcutsItem.from_action(_("Close Preview"), "app.close-preview"));
+				dialog.add(preview_section);
+
+				// ── View ──
+				var view_section = new Adw.ShortcutsSection(_("View"));
+				view_section.add(new Adw.ShortcutsItem.from_action(_("List View"), "app.switch-to-list"));
+				view_section.add(new Adw.ShortcutsItem.from_action(_("Grid View"), "app.switch-to-grid"));
+				dialog.add(view_section);
+
+				dialog.present(get_active_window());
 		}
 
 // Action: Clear the search bar and show all results

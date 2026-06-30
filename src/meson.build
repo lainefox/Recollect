@@ -69,7 +69,7 @@ recollect_resources = gnome.compile_resources(
   application_id,
   '../data/' + application_id + '.gresource.xml',
   gresource_bundle: true,
-  source_dir: ['../data', '../src/ui'],
+  source_dir: ['../data'],
   install: true,
   install_dir: pkgdatadir,
 )
