@@ -68,7 +68,7 @@ public class ScanPopover : Gtk.Popover {
 				var status_label = new Gtk.Label("0 / %d".printf(file_count));
 				status_label.set_halign(Gtk.Align.START);
 				status_label.add_css_class("caption");
-				status_label.add_css_class("dim-label");
+				status_label.add_css_class("dimmed");
 
 				var row_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
 				row_box.set_margin_top(4);

@@ -66,7 +66,7 @@ public class ImagePreviewSidebar : Gtk.Box {
 				path_label = new Gtk.Label("");
 				path_label.halign = Gtk.Align.START;
 				path_label.add_css_class("caption");
-				path_label.add_css_class("dim-label");
+				path_label.add_css_class("dimmed");
 				path_label.ellipsize = Pango.EllipsizeMode.END;
 				content_box.append(path_label);
 

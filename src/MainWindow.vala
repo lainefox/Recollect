@@ -272,7 +272,7 @@ public class MainWindow : Adw.ApplicationWindow {
 			scan_state_box.append(scan_label);
 
 			scan_sublabel = new Gtk.Label("");
-			scan_sublabel.add_css_class("dim-label");
+			scan_sublabel.add_css_class("dimmed");
 			scan_sublabel.add_css_class("caption");
 			scan_state_box.append(scan_sublabel);
 			stack.add_named(scan_state_box, "scanning");

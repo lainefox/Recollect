@@ -341,7 +341,7 @@ public class DownloadModelsDialog : Adw.Dialog {
 						valign = Gtk.Align.CENTER
 				};
 				size_label.add_css_class("caption");
-				size_label.add_css_class("dim-label");
+				size_label.add_css_class("dimmed");
 				row.add_suffix(size_label);
 
 				var download_button = new Gtk.Button() {

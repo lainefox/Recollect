@@ -59,14 +59,15 @@ public class OnboardingDialog : Adw.Dialog {
 				content_height = 500;
 				can_close = false;
 
-				var main_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
-				main_box.hexpand = true;
-				main_box.vexpand = true;
+				var toolbar_view = new Adw.ToolbarView();
+				toolbar_view.hexpand = true;
+				toolbar_view.vexpand = true;
 
 				// Header bar with back button(left) and skip button(right)
 				// No window controls — user must use Skip or Get Started
+				// ToolbarView automatically gives the header bar a flat appearance
+				// when used as a top bar, so no .flat style class is needed.
 				var header = new Adw.HeaderBar();
-				header.add_css_class("flat");
 				header.show_start_title_buttons = false;
 				header.show_end_title_buttons = false;
 
@@ -90,7 +91,7 @@ public class OnboardingDialog : Adw.Dialog {
 				});
 				header.pack_end(skip_button);
 
-				main_box.append(header);
+				toolbar_view.add_top_bar(header);
 
 				// Carousel for pages
 				carousel = new Adw.Carousel();
@@ -126,8 +127,6 @@ public class OnboardingDialog : Adw.Dialog {
 
 				// Page N: Choose Folders
 				carousel.append(build_folder_page());
-
-				main_box.append(carousel);
 
 				// Bottom navigation — buttons stacked in a fixed-height container
 				// so switching between download button / spinner / error doesn't shift content.
@@ -178,15 +177,22 @@ public class OnboardingDialog : Adw.Dialog {
 				});
 				bottom_stack.add_named(get_started_button, "started");
 
-				main_box.append(bottom_stack);
-
 				// Indicator dots
 				var indicator = new Adw.CarouselIndicatorDots();
 				indicator.carousel = carousel;
 				indicator.margin_bottom = 16;
-				main_box.append(indicator);
 
-				child = main_box;
+				// Wrap the carousel, bottom stack, and indicator in a content box
+				// for ToolbarView's content area.
+				var content_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 0);
+				content_box.hexpand = true;
+				content_box.vexpand = true;
+				content_box.append(carousel);
+				content_box.append(bottom_stack);
+				content_box.append(indicator);
+				toolbar_view.set_content(content_box);
+
+				child = toolbar_view;
 
 				// Don't populate folders yet — GSettings starts empty.
 				// Auto-detect only when user navigates to the folder page.
@@ -250,7 +256,7 @@ public class OnboardingDialog : Adw.Dialog {
 				var desc = new Gtk.Label(_("Recollect needs language models to read text from your images. Without at least one model installed, scanning will not work.\n\nYou can download the English model now — it only takes a moment. More languages can be added later in Settings."));
 				desc.wrap = true;
 				desc.set_halign(Gtk.Align.CENTER);
-				desc.add_css_class("dim-label");
+				desc.add_css_class("dimmed");
 				page_box.append(desc);
 
 				connect_model_service_signals();
@@ -317,7 +323,7 @@ public class OnboardingDialog : Adw.Dialog {
 				page_box.append(title_label);
 
 				var subtitle_label = new Gtk.Label(_("Select the folders that contain images you want to search through."));
-				subtitle_label.add_css_class("dim-label");
+				subtitle_label.add_css_class("dimmed");
 				subtitle_label.wrap = true;
 				subtitle_label.set_halign(Gtk.Align.CENTER);
 				page_box.append(subtitle_label);

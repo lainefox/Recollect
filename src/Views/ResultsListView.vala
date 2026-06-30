@@ -179,7 +179,7 @@ public class ResultsListView : Gtk.Box {
 			label.xalign = 0.0f;
 			label.ellipsize = Pango.EllipsizeMode.MIDDLE;
 			label.add_css_class("caption");
-			label.add_css_class("dim-label");
+			label.add_css_class("dimmed");
 			label.set_margin_top(8);
 			label.set_margin_bottom(8);
 			label.set_margin_start(16);
@@ -214,7 +214,7 @@ public class ResultsListView : Gtk.Box {
 			label.xalign = 0.0f;
 			label.ellipsize = Pango.EllipsizeMode.END;
 			label.add_css_class("caption");
-			label.add_css_class("dim-label");
+			label.add_css_class("dimmed");
 			label.set_margin_top(8);
 			label.set_margin_bottom(8);
 			label.set_margin_start(16);
@@ -248,7 +248,7 @@ public class ResultsListView : Gtk.Box {
 			label.xalign = 0.0f;
 			label.ellipsize = Pango.EllipsizeMode.START;
 			label.add_css_class("caption");
-			label.add_css_class("dim-label");
+			label.add_css_class("dimmed");
 			label.set_margin_top(8);
 			label.set_margin_bottom(8);
 			label.set_margin_start(16);

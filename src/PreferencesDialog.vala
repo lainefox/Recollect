@@ -555,7 +555,7 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				if(is_system) {
 						var badge = new Gtk.Label(_("System"));
 						badge.add_css_class("caption");
-						badge.add_css_class("dim-label");
+						badge.add_css_class("dimmed");
 						badge.valign = Gtk.Align.CENTER;
 						badge.tooltip_text = _("Managed by your system's package manager or preinstalled with the system");
 						row.add_suffix(badge);
