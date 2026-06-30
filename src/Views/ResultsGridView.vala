@@ -19,6 +19,7 @@ public class ResultsGridView : Gtk.Box {
 	private Adw.StatusPage no_results_page;
 
 		public signal void image_selected(ImageEntry entry);
+	public signal void context_menu_requested(ImageEntry entry, Gtk.Widget anchor, double x, double y);
 
 		public ResultsGridView(DatabaseService database, ThumbnailService thumbnail_service) {
 				Object(db: database, thumbnail_service: thumbnail_service);
@@ -78,8 +79,31 @@ public class ResultsGridView : Gtk.Box {
 
 				append(overlay);
 
-				// CSS for grid view tiles is loaded from style.css at app startup.
-				// .tile-frame and .tile-selected classes are defined there.
+				// Single right-click gesture on the whole grid_view — estimates
+				// the tile position from click coordinates and scroll offset.
+				var grid_right_click = new Gtk.GestureClick();
+				grid_right_click.button = 3;
+				grid_right_click.pressed.connect((n_press, x, y) => {
+						int view_height = grid_view.get_height();
+						int view_width = grid_view.get_width();
+						if(view_width <= 0 || view_height <= 0) return;
+						double scroll_y = scroller.vadjustment.value;
+						int tile_size = 200;
+						int spacing = 6;
+						int stride = tile_size + spacing;
+						int n_columns = (int) double.max(1.0, (double) view_width / stride);
+						if(n_columns == 0) return;
+						int row = (int)((scroll_y + y) / stride);
+						int col = (int)(x / stride);
+						uint position = (uint)(row * n_columns + col);
+						if(position < list_store.n_items) {
+								var entry = list_store.get_item(position) as ImageEntry;
+								if(entry != null) {
+										context_menu_requested(entry, grid_view, x, y);
+								}
+						}
+				});
+				grid_view.add_controller(grid_right_click);
 
 				// Model is attached directly at construct time.
 		}

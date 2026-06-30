@@ -96,9 +96,9 @@ public class ResultsListView : Gtk.Box {
 	private Gtk.ColumnViewColumn text_column;
 	private Gtk.ColumnViewColumn date_column;
 	private Gtk.ColumnViewColumn path_column;
-	private Gtk.Popover column_menu_popover;
 
 	public signal void image_selected(ImageEntry entry);
+	public signal void context_menu_requested(ImageEntry entry, Gtk.Widget anchor, double x, double y);
 
 	public ResultsListView(DatabaseService database, ThumbnailService thumbnail_service) {
 		Object(db: database, thumbnail_service: thumbnail_service);
@@ -144,6 +144,8 @@ public class ResultsListView : Gtk.Box {
 			label.valign = Gtk.Align.FILL;
 			label.add_css_class("heading");
 
+			box.hexpand = true;
+			box.halign = Gtk.Align.FILL;
 			box.append(thumb);
 			box.append(label);
 			list_item.child = box;
@@ -174,10 +176,11 @@ public class ResultsListView : Gtk.Box {
 			var list_item =(Gtk.ListItem) obj;
 
 			var label = new Gtk.Label("");
-			label.halign = Gtk.Align.START;
+			label.halign = Gtk.Align.FILL;
 			label.valign = Gtk.Align.FILL;
 			label.xalign = 0.0f;
 			label.ellipsize = Pango.EllipsizeMode.MIDDLE;
+			label.hexpand = true;
 			label.add_css_class("caption");
 			label.add_css_class("dimmed");
 			label.set_margin_top(8);
@@ -209,10 +212,11 @@ public class ResultsListView : Gtk.Box {
 			var list_item =(Gtk.ListItem) obj;
 
 			var label = new Gtk.Label("");
-			label.halign = Gtk.Align.START;
+			label.halign = Gtk.Align.FILL;
 			label.valign = Gtk.Align.FILL;
 			label.xalign = 0.0f;
 			label.ellipsize = Pango.EllipsizeMode.END;
+			label.hexpand = true;
 			label.add_css_class("caption");
 			label.add_css_class("dimmed");
 			label.set_margin_top(8);
@@ -243,10 +247,11 @@ public class ResultsListView : Gtk.Box {
 			var list_item =(Gtk.ListItem) obj;
 
 			var label = new Gtk.Label("");
-			label.halign = Gtk.Align.START;
+			label.halign = Gtk.Align.FILL;
 			label.valign = Gtk.Align.FILL;
 			label.xalign = 0.0f;
 			label.ellipsize = Pango.EllipsizeMode.START;
+			label.hexpand = true;
 			label.add_css_class("caption");
 			label.add_css_class("dimmed");
 			label.set_margin_top(8);
@@ -270,57 +275,6 @@ public class ResultsListView : Gtk.Box {
 		column_view.append_column(text_column);
 		column_view.append_column(date_column);
 		column_view.append_column(path_column);
-
-		// ── Right-click column header menu ──
-		var menu_box = new Gtk.Box(Gtk.Orientation.VERTICAL, 2);
-		menu_box.set_margin_start(8);
-		menu_box.set_margin_end(8);
-		menu_box.set_margin_top(6);
-		menu_box.set_margin_bottom(6);
-
-		// Name column — always visible, insensitive checkbox
-		var name_check = new Gtk.CheckButton.with_label(_("Name"));
-		name_check.active = true;
-		name_check.sensitive = false;
-		menu_box.append(name_check);
-
-		var text_check = new Gtk.CheckButton.with_label(_("Text"));
-		text_check.active = text_column.visible;
-		text_check.toggled.connect(() => {
-			text_column.visible = text_check.active;
-		});
-		menu_box.append(text_check);
-
-		var date_check = new Gtk.CheckButton.with_label(_("Date"));
-		date_check.active = date_column.visible;
-		date_check.toggled.connect(() => {
-			date_column.visible = date_check.active;
-		});
-		menu_box.append(date_check);
-
-		var path_check = new Gtk.CheckButton.with_label(_("Path"));
-		path_check.active = path_column.visible;
-		path_check.toggled.connect(() => {
-			path_column.visible = path_check.active;
-		});
-		menu_box.append(path_check);
-
-		column_menu_popover = new Gtk.Popover();
-		column_menu_popover.set_child(menu_box);
-		column_menu_popover.set_parent(column_view);
-
-		// Right-click gesture on column headers — use CAPTURE phase so it catches
-		// events on the internal header buttons before they're consumed
-		var right_click = new Gtk.GestureClick();
-		right_click.button = 3;
-		right_click.propagation_phase = Gtk.PropagationPhase.CAPTURE;
-		right_click.pressed.connect((n_press, x, y) => {
-			column_menu_popover.set_pointing_to(Gdk.Rectangle() {
-				x =(int) x, y =(int) y, width = 1, height = 1
-			});
-			column_menu_popover.popup();
-		});
-		column_view.add_controller(right_click);
 
 		selection_model.selection_changed.connect((position, n_items) => {
 			var entry = selection_model.selected_item as ImageEntry;
@@ -365,11 +319,25 @@ public class ResultsListView : Gtk.Box {
 		append(overlay);
 
 		column_view.add_css_class("results-list");
-	}
 
-// Load a thumbnail via the bounded, deduplicating ThumbnailService pool.
-// Spawning a thread per bind blew up memory when thousands of items bound
-// during a scan; routing through the shared pool bounds concurrency.
+		// Single right-click gesture on the whole column_view — estimates the
+		// row from click coordinates and scroll offset. Row height is ~48px.
+		var column_right_click = new Gtk.GestureClick();
+		column_right_click.button = 3;
+		column_right_click.pressed.connect((n_press, x, y) => {
+				double scroll_y = scroller.vadjustment.value;
+				int row_height = 48;
+				int header_height = 36;
+				uint position = (uint)(double.max(0.0, scroll_y + y - header_height) / row_height);
+				if(position < list_model.get_n_items()) {
+						var entry = list_model.get_item(position) as ImageEntry;
+						if(entry != null) {
+								context_menu_requested(entry, column_view, x, y);
+						}
+				}
+		});
+		column_view.add_controller(column_right_click);
+	}
 	private void load_thumbnail_async(string path, Gtk.Image thumb) {
 		if(thumbnail_service == null) return;
 		thumb.set_data<string>("thumbnail-path", path);

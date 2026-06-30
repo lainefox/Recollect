@@ -44,6 +44,10 @@ public class MainWindow : Adw.ApplicationWindow {
 		// Guard to prevent callbacks from touching widgets during teardown
 		private bool disposing = false;
 
+		// Guard to prevent selection-changed signals during view switching
+		// from opening the sidebar after a right-click context menu was used.
+		private bool switching_views = false;
+
 		// Tracks whether hide_preview_sidebar() is the one changing show_sidebar
 		// vs. an external swipe/click-away on mobile. Lets the notify handler
 		// distinguish programmatic hides from user-initiated ones.
@@ -385,18 +389,41 @@ public class MainWindow : Adw.ApplicationWindow {
 			list_view.image_selected.connect((entry) => {
 					current_selected_entry = entry;
 					preview_sidebar.set_entry(entry);
-					show_preview_sidebar();
+					if(!switching_views) {
+							show_preview_sidebar();
+					}
 			});
 			grid_view.image_selected.connect((entry) => {
 					current_selected_entry = entry;
 					preview_sidebar.set_entry(entry);
-					show_preview_sidebar();
+					if(!switching_views) {
+							show_preview_sidebar();
+					}
 			});
 
 			preview_sidebar.close_preview.connect(() => {
 					hide_preview_sidebar();
 			});
 
+			list_view.context_menu_requested.connect((entry, anchor, x, y) => {
+					show_image_context_menu(entry, anchor, x, y);
+			});
+			grid_view.context_menu_requested.connect((entry, anchor, x, y) => {
+					show_image_context_menu(entry, anchor, x, y);
+			});
+
+			// Context menu actions
+			var open_action = new SimpleAction("open-externally", null);
+			open_action.activate.connect(() => open_current_file());
+			add_action(open_action);
+
+			var folder_action = new SimpleAction("open-containing-folder", null);
+			folder_action.activate.connect(() => open_containing_folder());
+			add_action(folder_action);
+
+			var copy_action = new SimpleAction("copy-image", null);
+			copy_action.activate.connect(() => copy_current_image());
+			add_action(copy_action);
 		}
 
 // Intercept printable key presses in the main window and redirect them to
@@ -882,15 +909,17 @@ public class MainWindow : Adw.ApplicationWindow {
 						populate_active_view();
 				}
 
-				// Preserve selection state when switching views
+				// Preserve selection state when switching views.
+				// Guard against selection-changed signals triggering the sidebar.
+				switching_views = true;
 				if(current_selected_entry != null) {
 						if(is_list_view && list_view != null) {
 								list_view.select_entry(current_selected_entry);
 						} else if(!is_list_view && grid_view != null) {
 								grid_view.select_entry(current_selected_entry);
 						}
-						show_preview_sidebar();
 				}
+				switching_views = false;
 		}
 
 // Update progress labels with current/total values
@@ -1124,7 +1153,23 @@ public class MainWindow : Adw.ApplicationWindow {
 				}
 		}
 
+// Show a right-click context menu for an image entry at the given position.
+		private void show_image_context_menu(ImageEntry entry, Gtk.Widget anchor, double x, double y) {
+				current_selected_entry = entry;
 
+				var menu = new GLib.Menu();
+				menu.append(_("Open Externally"), "win.open-externally");
+				menu.append(_("Open Containing Folder"), "win.open-containing-folder");
+				menu.append(_("Copy Image"), "win.copy-image");
+
+				var popover = new Gtk.PopoverMenu.from_model(menu);
+				popover.set_parent(anchor);
+				popover.set_has_arrow(false);
+				popover.set_pointing_to(Gdk.Rectangle() {
+						x =(int) x, y =(int) y, width = 1, height = 1
+				});
+				popover.popup();
+		}
 
 
 
