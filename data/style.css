@@ -54,6 +54,10 @@
 	min-width: 24px;
 	min-height: 24px;
 	padding: 2px;
-	margin-right: 28px;
 	-gtk-icon-size: 14px;
+}
+/* When the search entry has text, the X icon appears — shift funnel left
+ * to sit just left of the X icon (~30px from right edge). */
+.search-filter-btn.has-text {
+	margin-right: 28px;
 }

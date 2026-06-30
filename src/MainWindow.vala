@@ -116,7 +116,6 @@ public class MainWindow : Adw.ApplicationWindow {
 				filter_button.add_css_class("circular");
 				filter_button.add_css_class("search-filter-btn");
 				filter_button.tooltip_text = _("Search filters");
-				filter_button.visible = false;
 				set_widget_accessible_description(filter_button, _("Filter search results by case, diacritics, whole words, or date range"));
 				// Overlay the filter button inside the SearchEntry (like Nautilus)
 				filter_button.halign = Gtk.Align.END;
@@ -136,9 +135,11 @@ public class MainWindow : Adw.ApplicationWindow {
 						}
 				});
 
-				search_entry.notify["text"].connect(() => {
-						filter_button.visible = search_entry.get_text().length > 0;
-				});
+				// Move the funnel button right of the X icon when text is present,
+				// or flush to the right edge when the entry is empty (no X icon).
+				search_entry.notify["text"].connect(update_filter_button_position);
+				// Set initial position
+				update_filter_button_position();
 
 				var search_overlay = new Gtk.Overlay();
 				search_overlay.child = search_entry;
@@ -699,6 +700,14 @@ public class MainWindow : Adw.ApplicationWindow {
 				}
 				scan_pie.visible = is_scanning;
 				pie_click.visible = is_scanning;
+		}
+
+		private void update_filter_button_position() {
+				if (search_entry.get_text().length > 0) {
+						filter_button.add_css_class("has-text");
+				} else {
+						filter_button.remove_css_class("has-text");
+				}
 		}
 
 		private void on_search_changed() {
