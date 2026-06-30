@@ -1,6 +1,7 @@
 [wrap-git]
 url = https://github.com/spotshare-ykary-com/Gom-Vala.git
 revision = 058cbf7436e13f69b9665916f7666e3d8298a3f8
+patch_directory = gom-vala
 
 [provide]
 dependency_names = libgom_dep
