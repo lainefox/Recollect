@@ -1,0 +1,101 @@
+{
+	"app-id": "org.laine.Recollect",
+	"runtime": "org.gnome.Platform",
+	"runtime-version": "50",
+	"sdk": "org.gnome.Sdk",
+	"sdk-extensions": [
+		"org.freedesktop.Sdk.Extension.rust-stable"
+	],
+	"command": "recollect",
+	"finish-args": [
+		"--share=ipc",
+		"--socket=wayland",
+		"--socket=x11",
+		"--device=dri",
+		"--share=network",
+		"--filesystem=home",
+		"--talk-name=org.freedesktop.portal.FileChooser",
+		"--talk-name=org.freedesktop.portal.OpenURI",
+		"--env=TESSDATA_PREFIX=/app/share/tessdata"
+	],
+	"build-options": {
+		"append-path": "/usr/lib/sdk/rust-stable/bin",
+		"build-args": [
+			"--share=network"
+		]
+	},
+	"modules": [
+		{
+			"name": "leptonica",
+			"buildsystem": "autotools",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://github.com/DanBloomberg/leptonica/releases/download/1.85.0/leptonica-1.85.0.tar.gz",
+					"sha256": "3745ae3bf271a6801a2292eead83ac926e3a9bc1bf622e9cd4dd0f3786e17205"
+				}
+			]
+		},
+		{
+			"name": "tesseract",
+			"buildsystem": "autotools",
+			"config-opts": [
+				"--disable-doc"
+			],
+			"post-install": [
+				"install -Dm644 eng.traineddata $FLATPAK_DEST/share/tessdata/eng.traineddata",
+				"install -Dm644 osd.traineddata $FLATPAK_DEST/share/tessdata/osd.traineddata"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://github.com/tesseract-ocr/tesseract/archive/5.5.0.tar.gz",
+					"sha256": "f2fb34ca035b6d087a42875a35a7a5c4155fa9979c6132365b1e5a28ebc3fc11"
+				},
+				{
+					"type": "file",
+					"url": "https://github.com/tesseract-ocr/tessdata_fast/raw/main/eng.traineddata",
+					"sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+				},
+				{
+					"type": "file",
+					"url": "https://github.com/tesseract-ocr/tessdata_fast/raw/main/osd.traineddata",
+					"sha256": "9cf5d576fcc47564f11265841e5ca839001e7e6f38ff7f7aacf46d15a96b00ff"
+				}
+			]
+		},
+		{
+			"name": "glycin",
+			"buildsystem": "meson",
+			"config-opts": [
+				"-Dlibglycin=true",
+				"-Dlibglycin-gtk4=true",
+				"-Dglycin-thumbnailer=false",
+				"-Dloaders=glycin-heif,glycin-image-rs,glycin-jxl,glycin-svg",
+				"-Dvapi=true",
+				"-Dtests=false"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://gitlab.gnome.org/GNOME/glycin/-/archive/2.1.5/glycin-2.1.5.tar.gz",
+					"sha256": "6d6096c4dcef138dfc8b391cf0b96a6bd7ae0421c967dbbce4b7cb97e3e72b17"
+				}
+			]
+		},
+		{
+			"name": "recollect",
+			"buildsystem": "meson",
+			"config-opts": [
+				"-Dprofile=default"
+			],
+			"sources": [
+				{
+					"type": "git",
+					"url": "https://github.com/lainefox/Recollect.git",
+					"branch": "master"
+				}
+			]
+		}
+	]
+}
