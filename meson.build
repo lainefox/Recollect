@@ -45,7 +45,7 @@ gnome = import('gnome')
 i18n = import('i18n')
 
 # Dependencies
-libadwaita_dep = dependency('libadwaita-1', version: '>= 1.7')
+libadwaita_dep = dependency('libadwaita-1', version: '>= 1.9')
 gtk_dep = dependency('gtk4', version: '>= 4.14')
 glib_dep = dependency('glib-2.0', version: '>= 2.80')
 gio_dep = dependency('gio-2.0', version: '>= 2.80')
