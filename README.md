@@ -34,7 +34,7 @@ sudo pacman -S vala meson ninja gtk4 libadwaita sqlite tesseract \
 ```
 
 Other distributions: install the equivalent packages for each dependency.  
-A Gom-Vala fork is auto-fetched via meson wrap — no manual setup needed.
+A [Gom-Vala](https://github.com/spotshare-ykary-com/Gom-Vala) fork is auto-fetched via meson wrap — no manual setup needed.
 
 ### Build and install
 
