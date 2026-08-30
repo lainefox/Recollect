@@ -67,14 +67,6 @@ public class ImagePreviewSidebar : Gtk.Box {
 
 				content_box.append(header_box);
 
-				// Path
-				path_label = new Gtk.Label("");
-				path_label.halign = Gtk.Align.START;
-				path_label.add_css_class("caption");
-				path_label.add_css_class("dimmed");
-				path_label.ellipsize = Pango.EllipsizeMode.END;
-				content_box.append(path_label);
-
 				// Preview image — wrapped in a black, padding-free container
 				// so the image sits flush against a dark backdrop. The image
 				// fills the container's width and grows vertically as needed,
@@ -116,6 +108,13 @@ public class ImagePreviewSidebar : Gtk.Box {
 				properties_group = new Adw.PreferencesGroup();
 				properties_group.title = _("Properties");
 				content_box.append(properties_group);
+
+				// Path
+				path_label = new Gtk.Label("");
+				path_label.halign = Gtk.Align.START;
+				path_label.add_css_class("body");
+				path_label.ellipsize = Pango.EllipsizeMode.END;
+				properties_group.add(create_property_row(_("Path"), path_label));
 
 				// Scanned date
 				scanned_at_value = new Gtk.Label("");
