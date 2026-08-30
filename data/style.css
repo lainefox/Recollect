@@ -2,6 +2,15 @@
 	background: transparent;
 }
 
+/* Model chips in the image preview sidebar — matches the adwaita
+ * wrap-box demo page's "tag" item chips. */
+.tag {
+	background: color-mix(in srgb, currentColor 10%, transparent);
+	color: inherit;
+	border-radius: 99px;
+	padding: 8px 12px;
+}
+
 .results-list row {
 	/* No margin — it confuses GtkColumnView's internal row height
 		 calculations during scrollbar transitions */
@@ -27,8 +36,19 @@
 	border-radius: 8px;
 }
 
-.image-preview-sidebar image {
-	margin: 12px;
+.image-preview-sidebar .preview-container {
+	background: black;
+	border-radius: 8px;
+	padding: 0;
+	margin: 0;
+}
+
+.image-preview-sidebar .preview-container image {
+	margin: 0;
+}
+
+.image-preview-sidebar .preview-image {
+	border-radius: 8px;
 }
 
 /* Search entry with overlaid filter button.

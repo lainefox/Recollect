@@ -10,7 +10,7 @@ public class ThumbnailService : Object {
 
 		public const int SIZE_LIST = 48;
 		public const int SIZE_GRID = 200;
-		public const int SIZE_PREVIEW = 250;
+		public const int SIZE_PREVIEW = 4096;
 
 		private const int MAX_CACHE_ENTRIES = 200;
 

@@ -9,7 +9,7 @@
 		<file>icons/scalable/actions/folder-download-symbolic.svg</file>
 		<file>icons/scalable/actions/check-round-outline-symbolic.svg</file>
 		<file>icons/scalable/actions/text-insert-symbolic.svg</file>
-
+                <file>icons/scalable/actions/external-link-symbolic.svg</file>
 		<!-- CSS -->
 		<file>style.css</file>
 	</gresource>

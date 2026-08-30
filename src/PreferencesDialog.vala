@@ -544,10 +544,10 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 										default:       labels += t;             break;
 								}
 						}
-						row.subtitle = _("%s — %s").printf(lang, string.joinv(", ", labels));
+						row.subtitle = _("%s (%s)").printf(lang, string.joinv(", ", labels));
 				} else {
 						row.title = display;
-						row.subtitle = _("%s — %s").printf(lang,
+						row.subtitle = _("%s (%s)").printf(lang,
 								variant != null ? variant_display_name(variant) : "?");
 				}
 
@@ -634,7 +634,7 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				return row;
 		}
 
-		private static string variant_display_name(string variant) {
+		public static string variant_display_name(string variant) {
 				switch(variant) {
 						case "fast":     return _("Fast");
 						case "best":     return _("Best");
