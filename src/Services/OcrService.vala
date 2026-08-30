@@ -23,34 +23,68 @@ public class OcrService : Object {
 		// Resolve the tessdata directory containing .traineddata files.
 		// Tries user-downloaded models, TESSDATA_PREFIX env var,
 		// system path, then falls back to Tesseract's compiled-in default.
-		private string? resolve_tessdata_path() {
-				// 1. User-downloaded models (check base path and tessdata/ subdir)
+		// Prefers a datapath that contains ALL requested languages so a
+		// language like chi_sim (system-only) isn't silently dropped when
+		// the user models dir only has eng.
+		private string? resolve_tessdata_path(string language) {
+				string[] candidates = {};
+
+				// 1. User-downloaded models — variant subdirs first, then the
+				//    base dir (legacy direct placement).
 				string user_models = Path.build_filename(
 						Environment.get_user_data_dir(),
 						Config.APPLICATION_ID,
 						"models"
 				);
-				string user_tessdata = Path.build_filename(user_models, "tessdata");
-				if(FileUtils.test(user_tessdata, FileTest.IS_DIR)) {
-						return user_tessdata;
+				string[] variant_dirs = { "tessdata", "tessdata_fast", "tessdata_best" };
+				foreach(unowned string variant in variant_dirs) {
+						string p = Path.build_filename(user_models, variant);
+						if(FileUtils.test(p, FileTest.IS_DIR)) {
+								candidates += p;
+						}
 				}
 				if(FileUtils.test(user_models, FileTest.IS_DIR)) {
-						return user_models;
+						candidates += user_models;
 				}
 
 				// 2. TESSDATA_PREFIX environment variable
 				string? env_prefix = Environment.get_variable("TESSDATA_PREFIX");
 				if(env_prefix != null && FileUtils.test(env_prefix, FileTest.IS_DIR)) {
-						return env_prefix;
+						candidates += env_prefix;
 				}
 
-				// 3. System tessdata (Arch Linux and most distros)
-				if(FileUtils.test("/usr/share/tessdata", FileTest.IS_DIR)) {
-						return "/usr/share/tessdata";
+				// 3. System tessdata (Arch Linux and most distros) — unless
+				//    --no-system-models was passed.
+				bool no_system_models = Environment.get_variable("RECOLLECT_NO_SYSTEM_MODELS") == "1";
+				if(!no_system_models && FileUtils.test("/usr/share/tessdata", FileTest.IS_DIR)) {
+						candidates += "/usr/share/tessdata";
 				}
 
-				// 4. Let Tesseract use its compiled-in default
-				return null;
+				// Prefer the first candidate that has every requested language.
+				// This keeps e.g. chi_sim+eng working when the user models dir
+				// only contains eng but the system dir has both.
+				foreach(unowned string candidate in candidates) {
+						if(datapath_has_languages(candidate, language)) {
+								return candidate;
+						}
+				}
+
+				// Fall back to the first candidate (best effort).
+				return candidates.length > 0 ? candidates[0] : null;
+		}
+
+		// True if the datapath contains a .traineddata file for every language
+		// in the "+"-separated language list.
+		private bool datapath_has_languages(string datapath, string language) {
+				foreach(unowned string lang in language.split("+")) {
+						string trimmed = lang.strip();
+						if(trimmed.length == 0) continue;
+						string traineddata = Path.build_filename(datapath, trimmed + ".traineddata");
+						if(!FileUtils.test(traineddata, FileTest.EXISTS)) {
+								return false;
+						}
+				}
+				return true;
 		}
 
 		public bool initialize(string language, string accuracy) {
@@ -72,8 +106,23 @@ public class OcrService : Object {
 						return false;
 				}
 
-				string? datapath = resolve_tessdata_path();
+				string? datapath = resolve_tessdata_path(language);
+
+				// Suppress Tesseract's stderr noise during init. When a language
+				// in the list is missing from the datapath, Tesseract prints
+				// "Error opening data file ... / Failed loading language '...'"
+				// but still falls back to the languages it can load — so the
+				// message is misleading. Real failures are logged below.
+				int saved_stderr = Posix.dup(2);
+				int devnull = Posix.open("/dev/null", Posix.O_WRONLY);
+				Posix.dup2(devnull, 2);
+				Posix.close(devnull);
+
 				int rc = api.init(datapath, language);
+
+				Posix.dup2(saved_stderr, 2);
+				Posix.close(saved_stderr);
+
 				if(rc != 0) {
 						warning("[OCR] Tesseract init failed for language '%s' with datapath '%s'", language, datapath ?? "(null)");
 						api = null;
