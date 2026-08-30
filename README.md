@@ -110,5 +110,5 @@ Run without arguments to launch the GUI:
 
 This program was written with the assistance of large language models (LLMs).
 The UI/UX design, visual layout, and application icon were created entirely by
-human effort.
+human effort (aka me, laine).
 
