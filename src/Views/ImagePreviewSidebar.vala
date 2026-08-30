@@ -10,7 +10,7 @@ public class ImagePreviewSidebar : Gtk.Box {
 		private Gtk.Label path_label;
 		private Gtk.ScrolledWindow scrolled_window;
 		private Adw.PreferencesGroup ocr_group;
-		private Adw.ActionRow ocr_row;
+		private Gtk.Label ocr_label;
 		private Adw.PreferencesGroup properties_group;
 		private Gtk.Label scanned_at_value;
 		private Adw.WrapBox models_flowbox;
@@ -96,13 +96,16 @@ public class ImagePreviewSidebar : Gtk.Box {
 				ocr_group.title = _("Scanned text");
 				content_box.append(ocr_group);
 
-				ocr_row = new Adw.ActionRow();
-				ocr_row.activatable = false;
-				ocr_row.selectable = false;
-				ocr_row.subtitle_selectable = true;
-				ocr_row.subtitle_lines = 0;
-				ocr_row.use_markup = false;
-				ocr_group.add(ocr_row);
+				// Plain wrapping label instead of an ActionRow subtitle, which is
+				// styled small and dimmed. The scanned text should read like body
+				// text, not metadata.
+				ocr_label = new Gtk.Label("");
+				ocr_label.wrap = true;
+				ocr_label.xalign = 0;
+				ocr_label.selectable = true;
+				ocr_label.focusable = true;
+				ocr_label.use_markup = false;
+				ocr_group.add(ocr_label);
 
 				// Properties section
 				properties_group = new Adw.PreferencesGroup();
@@ -158,18 +161,18 @@ public class ImagePreviewSidebar : Gtk.Box {
 						full_text = database.get_full_text_content(entry.id);
 				}
 				if(full_text != null && full_text.length > 0) {
-						ocr_row.use_markup = false;
-						ocr_row.subtitle_selectable = true;
-						ocr_row.subtitle = full_text.make_valid(-1);
+						ocr_label.use_markup = false;
+						ocr_label.selectable = true;
+						ocr_label.label = full_text.make_valid(-1);
 				} else if(entry.text_content != null && entry.text_content.length > 0) {
-						ocr_row.use_markup = false;
-						ocr_row.subtitle_selectable = true;
-						ocr_row.subtitle = entry.text_content.make_valid(-1);
+						ocr_label.use_markup = false;
+						ocr_label.selectable = true;
+						ocr_label.label = entry.text_content.make_valid(-1);
 				} else {
 						// No text — show an italic, non-selectable placeholder.
-						ocr_row.use_markup = true;
-						ocr_row.subtitle_selectable = false;
-						ocr_row.subtitle = "<i>%s</i>".printf(Markup.escape_text(_("No text found in this image")));
+						ocr_label.use_markup = true;
+						ocr_label.selectable = false;
+						ocr_label.label = "<i>%s</i>".printf(Markup.escape_text(_("No text found in this image")));
 				}
 
 				// Set scanned date
@@ -204,7 +207,7 @@ public class ImagePreviewSidebar : Gtk.Box {
 
 // Focus the OCR text for keyboard scrolling/navigation.
 		public void focus_ocr_text() {
-				ocr_row.grab_focus();
+				ocr_label.grab_focus();
 		}
 
 		public void clear() {
@@ -212,9 +215,9 @@ public class ImagePreviewSidebar : Gtk.Box {
 				filename_label.label = "";
 				path_label.label = "";
 				preview_image.set_texture(null);
-				ocr_row.use_markup = false;
-				ocr_row.subtitle_selectable = true;
-				ocr_row.subtitle = "";
+				ocr_label.use_markup = false;
+				ocr_label.selectable = true;
+				ocr_label.label = "";
 				scanned_at_value.label = "";
 				clear_models_chips();
 		}
