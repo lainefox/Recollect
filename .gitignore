@@ -1,7 +1,12 @@
 # Build directories
 build/
 builddir/
+build-dir/
 _build/
+
+# Flatpak build artifacts
+.flatpak-state/
+*.flatpak
 
 # Meson build artifacts
 builddir/
