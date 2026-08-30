@@ -1148,9 +1148,26 @@ public class MainWindow : Adw.ApplicationWindow {
 						var texture = Gdk.Texture.from_filename(current_selected_entry.path);
 						var clipboard = Gdk.Display.get_default().get_clipboard();
 						clipboard.set_texture(texture);
+						var toast = new Adw.Toast(_("Image copied to clipboard"));
+						toast_overlay.add_toast(toast);
 				} catch(Error e) {
 						warning("Failed to copy image to clipboard: %s", e.message);
+						var toast = new Adw.Toast(_("Failed to copy image"));
+						toast_overlay.add_toast(toast);
 				}
+		}
+
+// True when a text widget (search entry, selectable labels, etc.) has focus.
+// Used to keep Ctrl+C copying text instead of the selected image.
+		public bool is_text_input_focused() {
+				var focus = get_focus();
+				if(focus is Gtk.Editable || focus is Gtk.TextView) {
+						return true;
+				}
+				if(focus is Gtk.Label && ((Gtk.Label) focus).selectable) {
+						return true;
+				}
+				return false;
 		}
 
 // Show a right-click context menu for an image entry at the given position.

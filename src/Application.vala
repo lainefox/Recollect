@@ -159,7 +159,17 @@ public class Application : Adw.Application {
 				var open_file_action = new SimpleAction("open-file", null);
 				open_file_action.activate.connect(() => action_open_file());
 				add_action(open_file_action);
-				set_accels_for_action("app.open-file", {"<Control>Return", "<Control>KP_Enter"});
+				set_accels_for_action("app.open-file", {"<Control>o", "<Control>Return", "<Control>KP_Enter"});
+
+				var open_folder_action = new SimpleAction("open-containing-folder", null);
+				open_folder_action.activate.connect(() => action_open_containing_folder());
+				add_action(open_folder_action);
+				set_accels_for_action("app.open-containing-folder", {"<Control><Shift>o"});
+
+				var copy_image_action = new SimpleAction("copy-image", null);
+				copy_image_action.activate.connect(() => action_copy_image());
+				add_action(copy_image_action);
+				set_accels_for_action("app.copy-image", {"<Control>c"});
 		}
 
 		protected override void activate() {
@@ -292,6 +302,7 @@ public class Application : Adw.Application {
 				general_section.add(new Adw.ShortcutsItem.from_action(_("Preferences"), "app.preferences"));
 				general_section.add(new Adw.ShortcutsItem.from_action(_("Refresh / Rescan"), "app.rescan"));
 				general_section.add(new Adw.ShortcutsItem.from_action(_("Open File"), "app.open-file"));
+				general_section.add(new Adw.ShortcutsItem.from_action(_("Open Containing Folder"), "app.open-containing-folder"));
 				dialog.add(general_section);
 
 				// ── Search ──
@@ -305,6 +316,7 @@ public class Application : Adw.Application {
 				var preview_section = new Adw.ShortcutsSection(_("Preview"));
 				preview_section.add(new Adw.ShortcutsItem.from_action(_("Focus Preview"), "app.focus-preview"));
 				preview_section.add(new Adw.ShortcutsItem.from_action(_("Close Preview"), "app.close-preview"));
+				preview_section.add(new Adw.ShortcutsItem.from_action(_("Copy Image"), "app.copy-image"));
 				dialog.add(preview_section);
 
 				// ── View ──
@@ -348,6 +360,22 @@ public class Application : Adw.Application {
 		private void action_open_file() {
 				if(main_window != null) {
 						main_window.open_current_file();
+				}
+		}
+
+// Action: Open the folder containing the currently selected image
+		private void action_open_containing_folder() {
+				if(main_window != null) {
+						main_window.open_containing_folder();
+				}
+		}
+
+// Action: Copy the currently selected image to the clipboard.
+// Skipped while a text widget has focus so Ctrl+C copies text (e.g. in the
+// search entry) instead of the image.
+		private void action_copy_image() {
+				if(main_window != null && !main_window.is_text_input_focused()) {
+						main_window.copy_current_image();
 				}
 		}
 
