@@ -48,7 +48,8 @@ jobs:
           pacman -Syu --noconfirm
           pacman -S --noconfirm --needed base-devel git vala meson ninja \
             glib2 gtk4 libadwaita sqlite tesseract \
-            glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2
+            glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2 \
+            gobject-introspection
 
       - name: Create local source tarball
         run: |

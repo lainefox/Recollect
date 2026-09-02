@@ -28,6 +28,7 @@ makedepends=(
 	'vala'
 	'meson'
 	'ninja'
+	'gobject-introspection'  # needed by the Gom-Vala subproject for GIR
 	'git'  # needed to fetch the Gom-Vala meson wrap at build time
 )
 source=("$pkgname-$pkgver.tar.gz::https://github.com/lainefox/Recollect/archive/v$pkgver.tar.gz")
