@@ -5,6 +5,7 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 		private DatabaseService database;
 		private weak Gtk.Window parent_window;
 		private weak Application app;
+		private UpdateService? update_service;
 
 		// Folder page
 		private Adw.PreferencesGroup folder_group;
@@ -17,6 +18,18 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 		private Adw.SwitchRow background_scan_row;
 		private Adw.SwitchRow incremental_scan_row;
 		private Adw.SwitchRow hidden_folders_row;
+
+		// Updates group
+		private Adw.PreferencesGroup updates_group;
+		private Adw.SwitchRow update_check_row;
+		private Adw.ActionRow update_status_row;
+		private Gtk.Spinner update_spinner;
+		private Gtk.Button update_check_btn;
+		private Gtk.Button update_open_btn;
+		private Gtk.Button update_debug_btn;
+		private string update_release_url = "";
+		private string update_release_notes = "";
+		private string update_latest_version = "";
 
 		// OCR page
 		private Adw.PreferencesPage ocr_page;
@@ -61,13 +74,14 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				populate_folder_list();
 		}
 
-		public PreferencesDialog(SettingsService settings, ScannerService scanner, DatabaseService database, Gtk.Window parent_window, Application app) {
+		public PreferencesDialog(SettingsService settings, ScannerService scanner, DatabaseService database, Gtk.Window parent_window, Application app, UpdateService? update_service) {
 				Object();
 				this.settings = settings;
 				this.scanner = scanner;
 				this.database = database;
 				this.parent_window = parent_window;
 				this.app = app;
+				this.update_service = update_service;
 				build_ui();
 		}
 
@@ -434,9 +448,164 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				reset_row.add_suffix(reset_btn);
 				actions_group.add(reset_row);
 
+				// Updates group — shown at the top of the page when the update
+				// checker is compiled in.
+				if(Config.UPDATE_CHECKER && update_service != null) {
+						build_updates_group();
+				}
+
 				general_page.add(actions_group);
 
 				add(general_page);
+		}
+
+		// Build the "Updates" group with the status row and its action buttons.
+		private void build_updates_group() {
+				updates_group = new Adw.PreferencesGroup();
+				updates_group.title = _("Updates");
+
+				// Toggle to enable/disable update checking entirely.
+				update_check_row = new Adw.SwitchRow();
+				update_check_row.title = _("Check for Updates");
+				update_check_row.subtitle = _("Check for newer versions of Recollect on startup");
+				update_check_row.active = settings.get_check_for_updates();
+				update_check_row.notify["active"].connect(() => {
+						settings.set_check_for_updates(update_check_row.active);
+						update_status_row.visible = update_check_row.active;
+						if(update_check_row.active) {
+								start_update_check();
+						}
+				});
+				updates_group.add(update_check_row);
+
+				update_status_row = new Adw.ActionRow();
+				update_status_row.title = _("Checking for Updates…");
+				update_status_row.subtitle = _("Contacting GitHub…");
+				update_status_row.activatable = false;
+				update_status_row.visible = update_check_row.active;
+
+				// Spinner shown while a check is in flight.
+				update_spinner = new Gtk.Spinner();
+				update_spinner.visible = true;
+				update_spinner.spinning = true;
+				update_status_row.add_suffix(update_spinner);
+
+				// "Check Now" button — shown when idle (up to date or error).
+				update_check_btn = new Gtk.Button.with_label(_("Check Now"));
+				update_check_btn.valign = Gtk.Align.CENTER;
+				update_check_btn.visible = false;
+				update_check_btn.clicked.connect(() => {
+						start_update_check();
+				});
+				update_status_row.add_suffix(update_check_btn);
+
+				// "Download" button — shown when an update is available. Opens the
+				// GitHub release page straight away.
+				update_open_btn = new Gtk.Button.with_label(_("Download"));
+				update_open_btn.add_css_class("suggested-action");
+				update_open_btn.valign = Gtk.Align.CENTER;
+				update_open_btn.visible = false;
+				update_open_btn.clicked.connect(() => {
+						if(update_release_url != "") {
+								try {
+										AppInfo.launch_default_for_uri(update_release_url, null);
+								} catch(Error e) {
+										warning("Could not open release URL: %s", e.message);
+								}
+						}
+				});
+				update_status_row.add_suffix(update_open_btn);
+
+				// Debug button — re-runs the check (dev/testing).
+				update_debug_btn = new Gtk.Button.with_label(_("Debug"));
+				update_debug_btn.valign = Gtk.Align.CENTER;
+				update_debug_btn.visible = false;
+				update_debug_btn.clicked.connect(() => {
+						start_update_check();
+				});
+				update_status_row.add_suffix(update_debug_btn);
+
+				// Clicking the row opens the changelog popup.
+				update_status_row.activated.connect(() => {
+						show_changelog_dialog();
+				});
+
+				updates_group.add(update_status_row);
+
+				// Connect to the service's completion signal.
+				update_service.check_completed.connect(on_update_check_completed);
+
+				general_page.add(updates_group);
+
+				// If a check already completed (e.g. at startup), apply its result
+				// immediately instead of starting a new check.
+				if(update_service.has_check_result()) {
+						bool update_available;
+						string latest_version;
+						string release_url;
+						string release_notes;
+						string? error_message;
+						update_service.get_last_result(out update_available, out latest_version, out release_url, out release_notes, out error_message);
+						on_update_check_completed(update_available, latest_version, release_url, release_notes, error_message);
+				} else if(update_check_row.active) {
+						// Kick off the initial update check (only if enabled).
+						start_update_check();
+				}
+		}
+
+		// Show the changelog popup for the available update.
+		private void show_changelog_dialog() {
+				if(update_release_notes == "" || update_release_url == "") return;
+				var update_changelog_dialog = new ChangelogDialog(update_latest_version, update_release_notes, update_release_url);
+				update_changelog_dialog.present(this);
+		}
+
+		// Start an update check and switch the row to the "checking" state.
+		private void start_update_check() {
+				if(update_service == null) return;
+				update_status_row.title = _("Checking for Updates…");
+				update_status_row.subtitle = _("Contacting GitHub…");
+				update_spinner.visible = true;
+				update_spinner.spinning = true;
+				update_check_btn.visible = false;
+				update_open_btn.visible = false;
+				update_debug_btn.visible = false;
+				update_service.check_for_updates();
+		}
+
+		// Handle the update check result and update the row state.
+		private void on_update_check_completed(bool update_available, string latest_version, string release_url, string release_notes, string? error_message) {
+				update_spinner.visible = false;
+				update_spinner.spinning = false;
+
+				if(error_message != null) {
+						update_status_row.title = _("Update Check Failed");
+						update_status_row.subtitle = error_message;
+						update_status_row.activatable = false;
+						update_check_btn.visible = true;
+						update_open_btn.visible = false;
+						update_debug_btn.visible = false;
+						return;
+				}
+
+				if(update_available) {
+						update_latest_version = latest_version;
+						update_release_url = release_url;
+						update_release_notes = release_notes;
+						update_status_row.title = _("Update Available");
+						update_status_row.subtitle = _("A newer version (v%s) is available. Click here to see the changelog.").printf(latest_version);
+						update_status_row.activatable = true;
+						update_check_btn.visible = false;
+						update_open_btn.visible = true;
+						update_debug_btn.visible = false;
+				} else {
+						update_status_row.title = _("Up to Date");
+						update_status_row.subtitle = _("You are running the latest version.");
+						update_status_row.activatable = false;
+					update_check_btn.visible = true;
+					update_open_btn.visible = false;
+					update_debug_btn.visible = false;
+				}
 		}
 
 		private void build_ocr_page() {

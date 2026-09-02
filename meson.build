@@ -33,6 +33,7 @@ conf.set('GETTEXT_PACKAGE', application_id)
 conf.set('MAJOR_VERSION', MAJOR_VERSION)
 conf.set('MINOR_VERSION', MINOR_VERSION)
 conf.set('MICRO_VERSION', MICRO_VERSION)
+conf.set('UPDATE_CHECKER', get_option('update-checker') ? 'true' : 'false')
 
 # Make GETTEXT_PACKAGE available to the C preprocessor for glib/gi18n-lib.h _() macro
 add_project_arguments('-DGETTEXT_PACKAGE="@0@"'.format(application_id), language: 'c')

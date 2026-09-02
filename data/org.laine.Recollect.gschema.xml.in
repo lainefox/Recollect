@@ -111,5 +111,12 @@
 			<description>Whether to scan hidden (dot) folders during file discovery</description>
 		</key>
 
+		<!-- Check for updates -->
+		<key type="b" name="check-for-updates">
+			<default>true</default>
+			<summary>Check for updates</summary>
+			<description>Whether to check for newer versions of Recollect on startup</description>
+		</key>
+
 	</schema>
 </schemalist>

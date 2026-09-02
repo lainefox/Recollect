@@ -25,6 +25,7 @@ recollect_sources = [
   'Services/ScannerService.vala',
   'Services/ThumbnailService.vala',
   'Services/TesseractModelService.vala',
+  'Services/UpdateService.vala',
 
   # Utils
   'Utils/Utils.vala',
@@ -41,6 +42,7 @@ recollect_sources = [
   'PreferencesDialog.vala',
   'DownloadModelsDialog.vala',
   'OnboardingDialog.vala',
+  'ChangelogDialog.vala',
 
   # Application
   'Application.vala',

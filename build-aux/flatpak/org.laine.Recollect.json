@@ -87,7 +87,8 @@
 			"name": "recollect",
 			"buildsystem": "meson",
 			"config-opts": [
-				"-Dprofile=default"
+				"-Dprofile=default",
+				"-Dupdate-checker=true"
 			],
 			"sources": [
 				{

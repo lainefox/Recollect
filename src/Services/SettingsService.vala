@@ -336,6 +336,15 @@ public class SettingsService : Object {
 				settings.set_boolean("scan-hidden-folders", enabled);
 		}
 
+		// ── Update checking ──
+		public bool get_check_for_updates() {
+				return settings.get_boolean("check-for-updates");
+		}
+
+		public void set_check_for_updates(bool enabled) {
+				settings.set_boolean("check-for-updates", enabled);
+		}
+
 		// ── Quality tier detection ──
 
 // Find the tessdata directory by checking TESSDATA_PREFIX and common paths.

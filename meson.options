@@ -2,3 +2,5 @@ option('profile', type: 'combo', choices: ['default', 'development'], value: 'de
 			 description: 'Profile to build (development or default)')
 option('enable-i18n', type: 'boolean', value: true,
 			 description: 'Enable internationalization support')
+option('update-checker', type: 'boolean', value: true,
+			 description: 'Enable the in-app update checker (disable for distro-packaged builds)')

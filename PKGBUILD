@@ -34,7 +34,9 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/lainefox/Recollect/archive/
 sha256sums=('SKIP')  # TODO: replace with real hash after tagging v0.1.0
 
 build() {
-	meson setup build --prefix=/usr
+	# AUR builds are distro-packaged: disable the in-app update checker.
+	# Flatpak builds (build-aux/flatpak) keep it enabled by default.
+	meson setup build --prefix=/usr -Dupdate-checker=false
 	meson compile -C build
 }
 

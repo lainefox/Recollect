@@ -4,6 +4,7 @@ public class Application : Adw.Application {
 		private OcrService ocr_service;
 		private ScannerService scanner_service;
 		private ThumbnailService thumbnail_service;
+		private UpdateService update_service;
 		public MainWindow? main_window;
 
 		public Application() {
@@ -21,6 +22,9 @@ public class Application : Adw.Application {
 				ocr_service = new OcrService();
 				scanner_service = new ScannerService(database_service, ocr_service, settings_service);
 				thumbnail_service = new ThumbnailService();
+				if(Config.UPDATE_CHECKER) {
+						update_service = new UpdateService(settings_service);
+				}
 
 				database_service.init_sync();
 
@@ -188,6 +192,15 @@ public class Application : Adw.Application {
 								return Source.REMOVE;
 						});
 
+						// Check for updates at startup and show a toast if one is
+						// available. Deferred so it doesn't block window creation.
+						if(Config.UPDATE_CHECKER) {
+								Idle.add(() => {
+										check_for_updates_at_startup();
+										return Source.REMOVE;
+								});
+						}
+
 						// Sync UI if background scanning already started in startup()
 						if(scanner_service.is_scanning()) {
 								main_window.set_scanning(true);
@@ -250,15 +263,35 @@ public class Application : Adw.Application {
 				about.present(get_active_window());
 		}
 
+		// Trigger an update check at startup and show a toast if a newer version
+		// is available. The toast is actionable — clicking it opens the changelog
+		// popup (which has a Download button that opens the release page).
+		private void check_for_updates_at_startup() {
+				if(update_service == null || main_window == null) return;
+
+				update_service.check_completed.connect((update_available, latest_version, release_url, release_notes, error_message) => {
+						if(!update_available || main_window == null) return;
+						var toast = new Adw.Toast(_("Update available: v%s").printf(latest_version));
+						toast.set_button_label(_("View"));
+						toast.button_clicked.connect(() => {
+								var changelog = new ChangelogDialog(latest_version, release_notes, release_url);
+								changelog.present(main_window);
+						});
+						main_window.toast_overlay.add_toast(toast);
+				});
+
+				update_service.check_for_updates();
+		}
+
 // Action: Show Preferences dialog
 		private void action_preferences() {
-				var prefs = new PreferencesDialog(settings_service, scanner_service, database_service, main_window, this);
+				var prefs = new PreferencesDialog(settings_service, scanner_service, database_service, main_window, this, update_service);
 				prefs.present(main_window);
 		}
 
 // Action: Show Preferences dialog with OCR page selected
 		private void action_open_ocr_settings() {
-				var prefs = new PreferencesDialog(settings_service, scanner_service, database_service, main_window, this);
+				var prefs = new PreferencesDialog(settings_service, scanner_service, database_service, main_window, this, update_service);
 				prefs.show_ocr_page();
 				prefs.present(main_window);
 		}

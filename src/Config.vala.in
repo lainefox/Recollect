@@ -4,4 +4,5 @@ namespace Config {
     public const string VERSION = @VERSION@;
     public const string PKGDATADIR = @PKGDATADIR@;
     public const string LOCALEDIR = @LOCALEDIR@;
+    public const bool UPDATE_CHECKER = @UPDATE_CHECKER@;
 }
