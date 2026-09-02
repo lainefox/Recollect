@@ -28,6 +28,11 @@ sha256sums=('SKIP')  # TODO: replace with real hash after first release
 
 package() {
 	# The tarball contains the staged install tree (usr/...).
+	# The release tarball is built on Fedora, which uses lib64/.
+	# Arch uses lib/, so move lib64 -> lib.
 	cd "$srcdir"
 	cp -a usr "$pkgdir"/
+	if [[ -d "$pkgdir/usr/lib64" ]]; then
+		mv "$pkgdir/usr/lib64" "$pkgdir/usr/lib"
+	fi
 }
