@@ -1,12 +1,12 @@
 # Maintainer: Laine <lainefox@proton.me>
 #
-# NOTE: This PKGBUILD expects a `v0.1.0` git tag to exist on
+# NOTE: This PKGBUILD expects a `v1.0.0` git tag to exist on
 # https://github.com/lainefox/Recollect. Create it before building:
-#   git tag v0.1.0 && git push origin v0.1.0
+#   git tag v1.0.0 && git push origin v1.0.0
 # Then replace the SKIP sha256sum with the real one from the tarball.
 
 pkgname=recollect
-pkgver=0.1.0
+pkgver=1.0.0
 pkgrel=1
 pkgdesc="Search for text inside your images using OCR"
 arch=('x86_64' 'aarch64')
@@ -31,7 +31,7 @@ makedepends=(
 	'git'  # needed to fetch the Gom-Vala meson wrap at build time
 )
 source=("$pkgname-$pkgver.tar.gz::https://github.com/lainefox/Recollect/archive/v$pkgver.tar.gz")
-sha256sums=('SKIP')  # TODO: replace with real hash after tagging v0.1.0
+sha256sums=('SKIP')  # TODO: replace with real hash after tagging v1.0.0
 
 build() {
 	# AUR builds are distro-packaged: disable the in-app update checker.

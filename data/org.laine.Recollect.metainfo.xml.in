@@ -12,6 +12,11 @@
 	<screenshots>
 	</screenshots>
 	<releases>
+		<release version="1.0.0" date="2026-09-02">
+			<description>
+				<p>First stable release.</p>
+			</description>
+		</release>
 		<release version="0.1.0" date="2026-06-25">
 			<description>
 				<p>Initial release.</p>
