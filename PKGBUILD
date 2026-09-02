@@ -1,9 +1,7 @@
 # Maintainer: Laine <lainefox@proton.me>
 #
-# NOTE: This PKGBUILD expects a `v1.0.0` git tag to exist on
-# https://github.com/lainefox/Recollect. Create it before building:
-#   git tag v1.0.0 && git push origin v1.0.0
-# Then replace the SKIP sha256sum with the real one from the tarball.
+# Source package — compiled by makepkg. Downloads the source tarball from the
+# v1.0.0 git tag on GitHub. For a precompiled binary, see PKGBUILD-bin.
 
 pkgname=recollect
 pkgver=1.0.0

@@ -1,0 +1,44 @@
+name: AUR Build
+
+on:
+  push:
+    branches: [master]
+    tags:
+      - 'v*'
+  pull_request:
+
+jobs:
+  aur-build:
+    name: AUR build (PKGBUILD)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools and dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed base-devel git vala meson ninja \
+            glib2 gtk4 libadwaita sqlite tesseract \
+            glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2 \
+            gobject-introspection
+
+      - name: Create local source tarball
+        run: |
+          # The PKGBUILD downloads from a GitHub tag URL that may not exist yet.
+          # Provide a local tarball so makepkg uses it instead of downloading.
+          # Top-level dir must match the real GitHub archive name (Recollect-1.0.0).
+          mkdir -p /tmp/src/Recollect-1.0.0
+          cp -a . /tmp/src/Recollect-1.0.0/
+          rm -rf /tmp/src/Recollect-1.0.0/.git /tmp/src/Recollect-1.0.0/build /tmp/src/Recollect-1.0.0/builddir
+          cd /tmp/src
+          tar -czf "$GITHUB_WORKSPACE/recollect-1.0.0.tar.gz" Recollect-1.0.0
+
+      - name: Build with makepkg
+        run: |
+          # makepkg refuses to run as root, so create a dedicated build user.
+          useradd -m builder
+          chown -R builder:builder .
+          su builder -c "makepkg -f --noconfirm"

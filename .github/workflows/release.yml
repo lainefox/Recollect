@@ -1,0 +1,95 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  native-build:
+    name: Native release (tar.gz)
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          dnf install -y --refresh \
+            vala meson ninja-build git \
+            gtk4-devel libadwaita-devel \
+            sqlite-devel tesseract-devel \
+            glycin-devel glycin-gtk4-devel \
+            json-glib-devel libsoup3-devel gdk-pixbuf2-devel \
+            desktop-file-utils
+
+      - name: Configure
+        run: meson setup build --prefix=/usr --buildtype=release
+
+      - name: Build
+        run: meson compile -C build
+
+      - name: Install (staging)
+        run: meson install -C build --destdir /tmp/stage
+
+      - name: Package native release tarball
+        run: |
+          cd /tmp/stage
+          tar -czf "$GITHUB_WORKSPACE/recollect-${{ github.ref_name }}.tar.gz" .
+
+      - name: Upload native tarball artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-tarball
+          path: recollect-${{ github.ref_name }}.tar.gz
+
+  flatpak-build:
+    name: Flatpak bundle
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: recollect.flatpak
+          manifest-path: build-aux/flatpak/org.laine.Recollect.json
+          cache-key: flatpak-builder-${{ github.ref_name }}
+          cache: true
+
+      - name: Upload flatpak artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flatpak-bundle
+          path: recollect.flatpak
+
+  release:
+    name: Create GitHub release
+    runs-on: ubuntu-latest
+    needs: [native-build, flatpak-build]
+    permissions:
+      contents: write
+    steps:
+      - name: Download native tarball
+        uses: actions/download-artifact@v4
+        with:
+          name: native-tarball
+
+      - name: Download flatpak bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: flatpak-bundle
+
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            recollect-${{ github.ref_name }}.tar.gz
+            recollect.flatpak
+          generate_release_notes: true

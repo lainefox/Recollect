@@ -20,6 +20,7 @@
 	],
 	"build-options": {
 		"append-path": "/usr/lib/sdk/rust-stable/bin",
+		"buildtype": "release",
 		"build-args": [
 			"--share=network"
 		]

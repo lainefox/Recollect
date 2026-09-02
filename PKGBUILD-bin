@@ -1,0 +1,33 @@
+# Maintainer: Laine <lainefox@proton.me>
+#
+# Precompiled binary package. Downloads the native release tarball from the
+# GitHub release (built by the Release workflow). The tarball contains the
+# staged install tree (usr/bin, usr/share, etc.).
+
+pkgname=recollect-bin
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Search for text inside your images using OCR (precompiled binary)"
+arch=('x86_64' 'aarch64')
+url="https://github.com/lainefox/Recollect"
+license=('GPL-3.0-or-later')
+depends=(
+	'glib2'
+	'gtk4'
+	'libadwaita'
+	'sqlite'
+	'tesseract'
+	'glycin'
+	'glycin-gtk4'
+	'json-glib'
+	'libsoup3'
+	'gdk-pixbuf2'
+)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/lainefox/Recollect/releases/download/v$pkgver/recollect-v$pkgver.tar.gz")
+sha256sums=('SKIP')  # TODO: replace with real hash after first release
+
+package() {
+	# The tarball contains the staged install tree (usr/...).
+	cd "$srcdir"
+	cp -a usr "$pkgdir"/
+}
