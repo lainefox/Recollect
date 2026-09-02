@@ -46,7 +46,7 @@ jobs:
       - name: Install build tools and dependencies
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm --needed base-devel git \
+          pacman -S --noconfirm --needed base-devel git vala meson ninja \
             glib2 gtk4 libadwaita sqlite tesseract \
             glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2
 

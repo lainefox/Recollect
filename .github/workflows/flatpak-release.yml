@@ -10,7 +10,7 @@ jobs:
     name: Build flatpak bundle
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-50
+      image: bilelmoussaoui/flatpak-github-actions:latest
       options: --privileged
     steps:
       - name: Checkout

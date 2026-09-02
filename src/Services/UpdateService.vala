@@ -16,10 +16,8 @@ public class UpdateService : Object {
 		//   error_message:    non-null if the check failed (network, rate limit, etc.)
 		public signal void check_completed(bool update_available, string latest_version, string release_url, string release_notes, string? error_message);
 
-		// The GitHub repo to query. Currently wired to a test project so the
-		// update checker can be exercised before Recollect has its own releases.
-		// TODO: switch to "lainefox/Recollect" once releases exist.
-		private const string REPO = "gaphor/gaphor";
+		// The GitHub repo to query for the latest release.
+		private const string REPO = "lainefox/Recollect";
 		private const string RELEASES_API_URL = "https://api.github.com/repos/" + REPO + "/releases/latest";
 		private const string RELEASES_PAGE_URL = "https://github.com/" + REPO + "/releases/latest";
 
