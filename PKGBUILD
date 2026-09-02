@@ -34,6 +34,9 @@ source=("$pkgname-$pkgver.tar.gz::https://github.com/lainefox/Recollect/archive/
 sha256sums=('SKIP')  # TODO: replace with real hash after tagging v1.0.0
 
 build() {
+	# cd into the extracted source dir (name varies between the GitHub
+	# archive "Recollect-1.0.0" and the CI local tarball "recollect-1.0.0").
+	cd "$srcdir"/*/
 	# AUR builds are distro-packaged: disable the in-app update checker.
 	# Flatpak builds (build-aux/flatpak) keep it enabled by default.
 	meson setup build --prefix=/usr -Dupdate-checker=false
