@@ -44,5 +44,6 @@ build() {
 }
 
 package() {
+	cd "$srcdir/Recollect-$pkgver"
 	meson install -C build --destdir "$pkgdir"
 }
