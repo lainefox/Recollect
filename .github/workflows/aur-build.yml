@@ -38,6 +38,9 @@ jobs:
 
       - name: Build with makepkg
         run: |
+          # The PKGBUILD lives in build-aux/ (alongside the flatpak manifest).
+          # Copy it into the working directory so makepkg picks it up.
+          cp build-aux/PKGBUILD .
           # makepkg refuses to run as root, so create a dedicated build user.
           useradd -m builder
           chown -R builder:builder .
