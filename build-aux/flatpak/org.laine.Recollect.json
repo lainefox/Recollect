@@ -92,9 +92,8 @@
 			],
 			"sources": [
 				{
-					"type": "git",
-					"url": "https://github.com/lainefox/Recollect.git",
-					"branch": "master"
+					"type": "dir",
+					"path": "../../"
 				}
 			]
 		}
