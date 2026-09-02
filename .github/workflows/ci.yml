@@ -6,26 +6,59 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: Build (flatpak-builder)
+  native-build:
+    name: Native build (meson)
     runs-on: ubuntu-latest
     container:
-      image: bilelmoussaoui/flatpak-github-actions:gnome-50
-      options: --privileged
+      image: archlinux:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
-        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
-        with:
-          bundle: recollect.flatpak
-          manifest-path: build-aux/flatpak/org.laine.Recollect.json
-          cache-key: flatpak-builder-${{ github.sha }}
-          cache: true
+      - name: Install dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed \
+            base-devel vala meson ninja git \
+            gtk4 libadwaita sqlite tesseract \
+            glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2
 
-      - name: Upload bundle artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: recollect-flatpak
-          path: recollect.flatpak
+      - name: Configure
+        run: meson setup build --prefix=/usr
+
+      - name: Build
+        run: meson compile -C build
+
+      - name: Install (staging)
+        run: meson install -C build --destdir /tmp/stage
+
+  aur-build:
+    name: AUR build (PKGBUILD)
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install build tools and dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm --needed base-devel git \
+            glib2 gtk4 libadwaita sqlite tesseract \
+            glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2
+
+      - name: Create local source tarball
+        run: |
+          # The PKGBUILD downloads from a GitHub tag URL that may not exist yet.
+          # Provide a local tarball so makepkg uses it instead of downloading.
+          mkdir -p /tmp/src/recollect-0.1.0
+          cp -a . /tmp/src/recollect-0.1.0/
+          rm -rf /tmp/src/recollect-0.1.0/.git /tmp/src/recollect-0.1.0/build /tmp/src/recollect-0.1.0/builddir
+          cd /tmp/src
+          tar -czf "$GITHUB_WORKSPACE/recollect-0.1.0.tar.gz" recollect-0.1.0
+
+      - name: Build with makepkg
+        run: |
+          chown -R nobody:nobody .
+          su nobody -c "makepkg -f --noconfirm"
