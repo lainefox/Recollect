@@ -2,14 +2,12 @@ name: AUR Build
 
 on:
   push:
-    branches: [master]
     tags:
       - 'v*'
-  pull_request:
 
 jobs:
-  aur-build:
-    name: AUR build (PKGBUILD)
+  aur-bin-build:
+    name: AUR -bin build (PKGBUILD-bin)
     runs-on: ubuntu-latest
     container:
       image: archlinux:latest
@@ -25,22 +23,24 @@ jobs:
             glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2 \
             gobject-introspection
 
-      - name: Create local source tarball
+      - name: Build native release tarball
         run: |
-          # The PKGBUILD downloads from a GitHub tag URL that may not exist yet.
-          # Provide a local tarball so makepkg uses it instead of downloading.
-          # Top-level dir must match the real GitHub archive name (Recollect-1.0.0).
-          mkdir -p /tmp/src/Recollect-1.0.0
-          cp -a . /tmp/src/Recollect-1.0.0/
-          rm -rf /tmp/src/Recollect-1.0.0/.git /tmp/src/Recollect-1.0.0/build /tmp/src/Recollect-1.0.0/builddir
-          cd /tmp/src
-          tar -czf "$GITHUB_WORKSPACE/recollect-1.0.0.tar.gz" Recollect-1.0.0
+          # Build the same native release tarball that release.yml produces,
+          # so we can test PKGBUILD-bin against it locally.
+          meson setup build --prefix=/usr --buildtype=release
+          meson compile -C build
+          meson install -C build --destdir /tmp/stage
+          cd /tmp/stage
+          tar -czf "$GITHUB_WORKSPACE/recollect-${{ github.ref_name }}.tar.gz" .
 
-      - name: Build with makepkg
+      - name: Test PKGBUILD-bin with makepkg
         run: |
-          # The PKGBUILD lives in build-aux/ (alongside the flatpak manifest).
-          # Copy it into the working directory so makepkg picks it up.
-          cp build-aux/PKGBUILD .
+          # The -bin PKGBUILD downloads from the GitHub release URL, but the
+          # release may not exist yet. Provide a local tarball so makepkg uses
+          # it instead of downloading. The filename must match the source URL:
+          # $pkgname-$pkgver.tar.gz where pkgver has no 'v' prefix.
+          cp build-aux/PKGBUILD-bin PKGBUILD
+          cp "recollect-${{ github.ref_name }}.tar.gz" "recollect-bin-${GITHUB_REF_NAME#v}.tar.gz"
           # makepkg refuses to run as root, so create a dedicated build user.
           useradd -m builder
           chown -R builder:builder .
