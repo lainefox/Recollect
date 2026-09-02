@@ -10,18 +10,19 @@ jobs:
     name: Native build (meson)
     runs-on: ubuntu-latest
     container:
-      image: archlinux:latest
+      image: fedora:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm --needed \
-            base-devel vala meson ninja git \
-            gtk4 libadwaita sqlite tesseract \
-            glycin glycin-gtk4 json-glib libsoup3 gdk-pixbuf2
+          dnf install -y --refresh \
+            vala meson ninja-build git \
+            gtk4-devel libadwaita-devel \
+            sqlite-devel tesseract-devel \
+            glycin-devel glycin-gtk4-devel \
+            json-glib-devel libsoup3-devel gdk-pixbuf2-devel
 
       - name: Configure
         run: meson setup build --prefix=/usr
