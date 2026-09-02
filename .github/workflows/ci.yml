@@ -22,7 +22,8 @@ jobs:
             gtk4-devel libadwaita-devel \
             sqlite-devel tesseract-devel \
             glycin-devel glycin-gtk4-devel \
-            json-glib-devel libsoup3-devel gdk-pixbuf2-devel
+            json-glib-devel libsoup3-devel gdk-pixbuf2-devel \
+            desktop-file-utils
 
       - name: Configure
         run: meson setup build --prefix=/usr
@@ -61,5 +62,7 @@ jobs:
 
       - name: Build with makepkg
         run: |
-          chown -R nobody:nobody .
-          su nobody -c "makepkg -f --noconfirm"
+          # makepkg refuses to run as root, so create a dedicated build user.
+          useradd -m builder
+          chown -R builder:builder .
+          su builder -c "makepkg -f --noconfirm"
