@@ -54,11 +54,12 @@ jobs:
         run: |
           # The PKGBUILD downloads from a GitHub tag URL that may not exist yet.
           # Provide a local tarball so makepkg uses it instead of downloading.
-          mkdir -p /tmp/src/recollect-1.0.0
-          cp -a . /tmp/src/recollect-1.0.0/
-          rm -rf /tmp/src/recollect-1.0.0/.git /tmp/src/recollect-1.0.0/build /tmp/src/recollect-1.0.0/builddir
+          # Top-level dir must match the real GitHub archive name (Recollect-1.0.0).
+          mkdir -p /tmp/src/Recollect-1.0.0
+          cp -a . /tmp/src/Recollect-1.0.0/
+          rm -rf /tmp/src/Recollect-1.0.0/.git /tmp/src/Recollect-1.0.0/build /tmp/src/Recollect-1.0.0/builddir
           cd /tmp/src
-          tar -czf "$GITHUB_WORKSPACE/recollect-1.0.0.tar.gz" recollect-1.0.0
+          tar -czf "$GITHUB_WORKSPACE/recollect-1.0.0.tar.gz" Recollect-1.0.0
 
       - name: Build with makepkg
         run: |
