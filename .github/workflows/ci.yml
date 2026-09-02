@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build:
+    name: Build (flatpak-builder)
+    runs-on: ubuntu-latest
+    container:
+      image: bilelmoussaoui/flatpak-github-actions:gnome-50
+      options: --privileged
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build
+        uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
+        with:
+          bundle: recollect.flatpak
+          manifest-path: build-aux/flatpak/org.laine.Recollect.json
+          cache-key: flatpak-builder-${{ github.sha }}
+          cache: true
+
+      - name: Upload bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: recollect-flatpak
+          path: recollect.flatpak
