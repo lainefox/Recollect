@@ -26,8 +26,9 @@ jobs:
       - name: Build native release tarball
         run: |
           # Build the same native release tarball that release.yml produces,
-          # so we can test PKGBUILD-bin against it locally.
-          meson setup build --prefix=/usr --buildtype=release
+          # so we can test PKGBUILD-bin against it locally. The -bin package is
+          # managed by the AUR helper, so disable the in-app update checker.
+          meson setup build --prefix=/usr --buildtype=release -Dupdate-checker=false
           meson compile -C build
           meson install -C build --destdir /tmp/stage
           cd /tmp/stage

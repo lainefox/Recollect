@@ -26,7 +26,9 @@ jobs:
             desktop-file-utils
 
       - name: Configure
-        run: meson setup build --prefix=/usr --buildtype=release
+        # The -bin package is managed by the AUR helper, so disable the in-app
+        # update checker. The flatpak keeps it enabled (not on Flathub yet).
+        run: meson setup build --prefix=/usr --buildtype=release -Dupdate-checker=false
 
       - name: Build
         run: meson compile -C build
