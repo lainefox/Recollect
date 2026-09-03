@@ -110,12 +110,6 @@ meson compile -C build
 | `--reset` | Reset all settings to defaults |
 | `--no-system-models` | Skip system Tesseract models; only use downloaded ones |
 
-Run without arguments to launch the GUI:
-
-```bash
-flatpak run org.laine.Recollect
-```
-
 ## AI Disclosure
 
 This program was written with the assistance of large language models (LLMs).
