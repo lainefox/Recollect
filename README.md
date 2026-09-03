@@ -116,7 +116,7 @@ meson compile -C build
 
 This program was written with the assistance of large language models (LLMs).
 The UI/UX design, visual layout, and application icon were created entirely by
-human effort (aka me, laine).
+human effort (aka me, **laine**). [OpenCode](https://opencode.ai) made working on this project a breeze, shoutout <3
 
 ## License
 
