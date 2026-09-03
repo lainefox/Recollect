@@ -24,6 +24,10 @@ Recollect scans images with Tesseract OCR, indexes extracted text in a local SQL
 - **Internationalization**: gettext-based translations
 - **13 image formats supported**: PNG, JPEG, TIFF, BMP, WebP, GIF, AVIF, HEIC/HEIF, JPEG XL, SVG
 
+## How it works
+
+Recollect watches your chosen folders and runs each image through Tesseract OCR to extract its text. That text is stored in a local SQLite database, so searching is instant, with no re-scanning needed. When you type a query, Recollect matches against the indexed text and shows the matching images with a snippet of the recognized content.
+
 ## Installation
 
 Precompiled flatpak bundles are attached to each [GitHub release](https://github.com/lainefox/Recollect/releases). Download `recollect.flatpak` and install it:
@@ -31,8 +35,6 @@ Precompiled flatpak bundles are attached to each [GitHub release](https://github
 ```bash
 flatpak install --user recollect.flatpak
 ```
-
-The flatpak build has the in-app update checker enabled.
 
 ## Building from source
 
@@ -44,7 +46,7 @@ sudo pacman -S vala meson ninja gtk4 libadwaita sqlite tesseract \
 ```
 
 Other distributions: install the equivalent packages for each dependency.  
-A [Gom-Vala](https://github.com/spotshare-ykary-com/Gom-Vala) fork is auto-fetched via meson wrap — no manual setup needed.
+A [Gom-Vala](https://github.com/spotshare-ykary-com/Gom-Vala) fork is auto-fetched via meson wrap, so no manual setup is needed.
 
 ### Build and install
 
@@ -115,4 +117,8 @@ meson compile -C build
 This program was written with the assistance of large language models (LLMs).
 The UI/UX design, visual layout, and application icon were created entirely by
 human effort (aka me, laine).
+
+## License
+
+Recollect is licensed under the [GNU General Public License v3.0](LICENSE).
 
