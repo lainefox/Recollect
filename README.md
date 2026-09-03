@@ -113,10 +113,6 @@ meson compile -C build
 Run without arguments to launch the GUI:
 
 ```bash
-# From source build
-~/.local/bin/recollect
-
-# From flatpak
 flatpak run org.laine.Recollect
 ```
 
