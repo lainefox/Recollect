@@ -24,7 +24,38 @@ Recollect scans images with Tesseract OCR, indexes extracted text in a local SQL
 - **Internationalization**: gettext-based translations
 - **13 image formats supported**: PNG, JPEG, TIFF, BMP, WebP, GIF, AVIF, HEIC/HEIF, JPEG XL, SVG
 
-## Building
+## Installation
+
+### Flatpak
+
+Precompiled flatpak bundles are attached to each [GitHub release](https://github.com/lainefox/Recollect/releases). Download `recollect.flatpak` and install it:
+
+```bash
+flatpak install --user recollect.flatpak
+```
+
+The flatpak build has the in-app update checker enabled.
+
+### Arch Linux (AUR)
+
+A precompiled binary package is available on the AUR as `recollect-bin`:
+
+```bash
+yay -S recollect-bin
+```
+
+The AUR package is managed by your AUR helper, so the in-app update checker is disabled.
+
+### Native release tarball
+
+Each [GitHub release](https://github.com/lainefox/Recollect/releases) also includes a native tarball (`recollect-vX.Y.Z.tar.gz`) containing the staged install tree (`usr/bin`, `usr/share`, etc.). Extract it and copy the contents into your system:
+
+```bash
+tar -xzf recollect-vX.Y.Z.tar.gz
+sudo cp -a usr/* /usr/
+```
+
+## Building from source
 
 ### Dependencies (Arch Linux)
 
@@ -103,7 +134,14 @@ meson compile -C build
 Run without arguments to launch the GUI:
 
 ```bash
+# From source build
 ~/.local/bin/recollect
+
+# From flatpak
+flatpak run org.laine.Recollect
+
+# From AUR
+recollect
 ```
 
 ## AI Disclosure
