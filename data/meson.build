@@ -16,6 +16,7 @@ gnome.compile_schemas(
 # Desktop file
 desktop_conf = configuration_data()
 desktop_conf.set('APP_ID', application_id)
+desktop_conf.set('BINDIR', bindir)
 configure_file(
 	input: base_id + '.desktop.in',
 	output: application_id + '.desktop',
