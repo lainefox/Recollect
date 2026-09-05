@@ -681,21 +681,25 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 								model_rows.append(row);
 						}
 
-						// User row — shown even if system also exists(distinct entry).
+						// User rows — one per installed quality variant, so each
+						// quality appears as its own selectable entry.
 						if(user_avail) {
-								string? variant = settings.get_user_model_variant(lang);
-								var row = create_model_row(lang, "user", variant, active_set);
-								models_group.add(row);
-								model_rows.append(row);
+								string[] variants = settings.get_user_model_variants(lang);
+								foreach(unowned string variant in variants) {
+										var row = create_model_row(lang, "user", variant, active_set);
+										models_group.add(row);
+										model_rows.append(row);
+								}
 						}
 				}
 		}
 
 // Create a single model row for |lang| with |source|("system"|"user").
-// |variant| is the quality tier name if known.
+// |variant| is the specific quality tier for user rows (null for system).
 		private Adw.ActionRow create_model_row(string lang, string source, string? variant, HashTable<string,string> active_set) {
 				string display = get_language_display_name(lang);
 				bool is_system =(source == "system");
+				string row_variant = variant != null ? variant : "balanced";
 
 				var row = new Adw.ActionRow();
 
@@ -716,8 +720,7 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 						row.subtitle = _("%s (%s)").printf(lang, string.joinv(", ", labels));
 				} else {
 						row.title = display;
-						row.subtitle = _("%s (%s)").printf(lang,
-								variant != null ? variant_display_name(variant) : "?");
+						row.subtitle = _("%s (%s)").printf(lang, variant_display_name(row_variant));
 				}
 
 				// Badge(system) or delete button(user).
@@ -737,20 +740,28 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 						delete_btn.add_css_class("flat");
 						delete_btn.add_css_class("destructive-action");
 						delete_btn.clicked.connect(() => {
-								settings.delete_user_model(lang);
+								settings.delete_user_model_variant(lang, row_variant);
 								populate_models_list();
 						});
 						row.add_suffix(delete_btn);
 				}
 
 				// Checkbox — initially active if the language is in the active set.
-				// When both system and user models exist for the same code, only the
-				// user model is active(the one the user explicitly chose to install).
+				// For user rows, the row is active only when the accuracy setting
+				// matches this variant. The system row is active when the language
+				// is active but no user variant matches the accuracy setting.
 				bool active;
-				if(is_system && settings.has_user_model(lang)) {
-						active = false;  // user model takes priority
+				if(is_system) {
+						bool user_variant_active = false;
+						foreach(string v in settings.get_user_model_variants(lang)) {
+								if(settings.get_ocr_accuracy() == v) {
+										user_variant_active = true;
+										break;
+								}
+						}
+						active = active_set.contains(lang) && !user_variant_active;
 				} else {
-						active = active_set.contains(lang);
+						active = active_set.contains(lang) && settings.get_ocr_accuracy() == row_variant;
 				}
 				var check = new Gtk.CheckButton();
 				check.add_css_class("selection-mode");
@@ -762,22 +773,33 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				// Store metadata on the row so the toggled handler can do mutual exclusion.
 				row.set_data_full("lang-code",(void*) lang.dup(), g_free);
 				row.set_data_full("source",(void*) source.dup(), g_free);
+				row.set_data_full("variant",(void*) row_variant.dup(), g_free);
 
 				// Toggle handler
 				check.toggled.connect(() => {
-						if(!check.active) {
-								// Let the normal collection below handle the update.
-						} else {
-								// Mutual exclusion: de-select the opposite source for this code.
+						if(check.active) {
+								// Mutual exclusion: de-select every other row for this
+								// code (system row and other quality variants).
 								string code = lang;
-								string src = source;
 								foreach(var r in model_rows) {
 										if(r == row) continue;
 										string? other_code = r.get_data<string?>("lang-code");
-										string? other_src  = r.get_data<string?>("source");
-										if(other_code == code && other_src != src) {
+										if(other_code == code) {
 												var cb = r.activatable_widget as Gtk.CheckButton;
 												if(cb != null) cb.active = false;
+										}
+								}
+
+								// Set the accuracy to this row's quality.
+								if(variant != null) {
+										settings.set_ocr_accuracy(row_variant);
+								} else {
+										// System row — use the first tier the system provides.
+										var tiers = settings.get_language_quality_tiers(lang);
+										if(tiers.length > 0) {
+												settings.set_ocr_accuracy(tiers[0]);
+										} else {
+												settings.set_ocr_accuracy("balanced");
 										}
 								}
 						}

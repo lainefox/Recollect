@@ -389,23 +389,14 @@ public class SettingsService : Object {
 				string base_dir = find_tessdata_dir();
 				string[] tiers = {};
 
-				// Check user-downloaded models first (they take priority)
-				string models_dir = Path.build_filename(Environment.get_user_data_dir(), Config.APPLICATION_ID, "models");
-				string[] variant_names = { "fast", "balanced", "best" };
-				string[] variant_subdirs = { "tessdata_fast", "tessdata", "tessdata_best" };
-				for(int i = 0; i < variant_names.length; i++) {
-						string path = Path.build_filename(models_dir, variant_subdirs[i], lang_code + ".traineddata");
-						if(FileUtils.test(path, FileTest.EXISTS)) {
-								tiers += variant_names[i];
-						}
-				}
-
-				if(tiers.length > 0) {
-						return tiers;
-				}
-
+				// Only check system directories — user-downloaded tiers are
+				// shown on the separate user model row. This prevents the
+				// system row from displaying variants the user installed via
+				// the app (e.g. downloading "English Best" would otherwise
+				// make the system row show "eng (Balanced, Best)" with a
+				// misleading "System" badge).
 				if(base_dir == "") {
-						return { "balanced" };
+						return {};
 				}
 
 				// System variants: balanced (base tessdata) is always available
@@ -443,16 +434,20 @@ public class SettingsService : Object {
 				return false;
 		}
 
-		public string? get_user_model_variant(string code) {
+		// All quality variants the user has downloaded for a code. Multiple
+		// variants can be installed at once (one file per subdir).
+		public string[] get_user_model_variants(string code) {
 				string models_dir = get_user_models_dir();
 				string[] variants = new string[] { "fast", "balanced", "best" };
 				string[] subdirs  = new string[] { "tessdata_fast", "tessdata", "tessdata_best" };
+				string[] found = {};
 				for(int i = 0; i < variants.length; i++) {
 						string p = Path.build_filename(models_dir, subdirs[i], code + ".traineddata");
-						if(FileUtils.test(p, FileTest.EXISTS))
-								return variants[i];
+						if(FileUtils.test(p, FileTest.EXISTS)) {
+								found += variants[i];
+						}
 				}
-				return null;
+				return found;
 		}
 
 		public bool is_system_model_installed(string code) {
@@ -484,6 +479,46 @@ public class SettingsService : Object {
 				// OCR language setting so the app doesn't try to use a missing model.
 				if(!is_system_model_installed(code)) {
 						remove_code_from_ocr_language(code);
+				}
+		}
+
+// Delete a single quality variant of a user-downloaded model. Other
+// variants of the same code stay installed. If the deleted variant was
+// the active accuracy, falls back to balanced; if no model remains for
+// the code, removes it from the OCR language setting.
+		public void delete_user_model_variant(string code, string variant) {
+				string models_dir = get_user_models_dir();
+				string p = Path.build_filename(models_dir, variant_subdir(variant), code + ".traineddata");
+				if(FileUtils.test(p, FileTest.EXISTS)) {
+						try {
+								var file = File.new_for_path(p);
+								file.delete();
+						} catch(Error e) {
+								warning("Failed to delete user model %s: %s", code, e.message);
+						}
+				}
+
+				refresh_available_languages();
+
+				// If the deleted variant was the active accuracy, fall back to
+				// balanced so the app doesn't keep requesting a missing model.
+				if(get_ocr_accuracy() == variant) {
+						set_ocr_accuracy("balanced");
+				}
+
+				// If no user model remains and no system model provides this
+				// code, remove it from the active OCR language setting.
+				if(!has_user_model(code) && !is_system_model_installed(code)) {
+						remove_code_from_ocr_language(code);
+				}
+		}
+
+		private static string variant_subdir(string variant) {
+				switch(variant) {
+						case "fast": return "tessdata_fast";
+						case "best": return "tessdata_best";
+						case "balanced":
+						default: return "tessdata";
 				}
 		}
 

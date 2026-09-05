@@ -26,18 +26,34 @@ public class OcrService : Object {
 		// Prefers a datapath that contains ALL requested languages so a
 		// language like chi_sim (system-only) isn't silently dropped when
 		// the user models dir only has eng.
-		private string? resolve_tessdata_path(string language) {
+		// The accuracy setting selects which user variant subdir is tried
+		// first, so multiple installed variants (fast/balanced/best) resolve
+		// to the one the user actually selected.
+		private string? resolve_tessdata_path(string language, string accuracy) {
 				string[] candidates = {};
 
 				// 1. User-downloaded models — variant subdirs first, then the
-				//    base dir (legacy direct placement).
+				//    base dir (legacy direct placement). The subdir matching
+				//    the current accuracy setting is tried first.
 				string user_models = Path.build_filename(
 						Environment.get_user_data_dir(),
 						Config.APPLICATION_ID,
 						"models"
 				);
+				string preferred = "tessdata";
+				switch(accuracy) {
+						case "fast": preferred = "tessdata_fast"; break;
+						case "best": preferred = "tessdata_best"; break;
+						default:     preferred = "tessdata";      break;
+				}
 				string[] variant_dirs = { "tessdata", "tessdata_fast", "tessdata_best" };
+				string[] ordered_dirs = { preferred };
 				foreach(unowned string variant in variant_dirs) {
+						if(variant != preferred) {
+								ordered_dirs += variant;
+						}
+				}
+				foreach(unowned string variant in ordered_dirs) {
 						string p = Path.build_filename(user_models, variant);
 						if(FileUtils.test(p, FileTest.IS_DIR)) {
 								candidates += p;
@@ -106,7 +122,7 @@ public class OcrService : Object {
 						return false;
 				}
 
-				string? datapath = resolve_tessdata_path(language);
+				string? datapath = resolve_tessdata_path(language, accuracy);
 
 				// Suppress Tesseract's stderr noise during init. When a language
 				// in the list is missing from the datapath, Tesseract prints

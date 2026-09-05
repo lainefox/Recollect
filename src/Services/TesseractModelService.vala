@@ -9,7 +9,7 @@ public class TesseractModelService : Object {
 		public signal void download_progress(string code, string variant, double progress);
 		public signal void download_completed(string code, string variant);
 		public signal void download_failed(string code, string variant, string error);
-		public signal void model_deleted(string code);
+		public signal void model_deleted(string code, string variant);
 
 		private GenericArray<TesseractModel> language_models = new GenericArray<TesseractModel>();
 		private GenericArray<TesseractModel> script_models = new GenericArray<TesseractModel>();
@@ -30,18 +30,28 @@ public class TesseractModelService : Object {
 		}
 
 		public bool is_downloading(string code) {
-				return downloading_codes.contains(code);
+				// Any variant of this code currently downloading?
+				var iter = HashTableIter<string, bool>(downloading_codes);
+				string? key = null;
+				bool? val = null;
+				while(iter.next(out key, out val)) {
+						if(key != null && key.has_prefix(code + ":")) return true;
+				}
+				return false;
 		}
 
-		public string? get_installed_variant(string code) {
+		// All quality variants currently installed for a code. Multiple
+		// variants can be installed at once (one file per subdir).
+		public string[] get_installed_variants(string code) {
 				string base_dir = get_user_models_dir();
+				string[] found = {};
 				foreach(string variant in MODEL_VARIANTS) {
 						string path = Path.build_filename(base_dir, variant_subdir_name(variant), code + ".traineddata");
 						if(FileUtils.test(path, FileTest.EXISTS)) {
-								return variant;
+								found += variant;
 						}
 				}
-				return null;
+				return found;
 		}
 
 		public TesseractModel? find_model(string code) {
@@ -167,13 +177,13 @@ public class TesseractModelService : Object {
 				language_models = new GenericArray<TesseractModel>();
 				for(uint i = 0; i < cached_language_models.length; i++) {
 						var model = cached_language_models.get(i);
-						model.installed_variant = get_installed_variant(model.code);
+						model.set_installed_variants(get_installed_variants(model.code));
 						language_models.add(model);
 				}
 				script_models = new GenericArray<TesseractModel>();
 				for(uint i = 0; i < cached_script_models.length; i++) {
 						var model = cached_script_models.get(i);
-						model.installed_variant = get_installed_variant(model.code);
+						model.set_installed_variants(get_installed_variants(model.code));
 						script_models.add(model);
 				}
 		}
@@ -190,9 +200,12 @@ public class TesseractModelService : Object {
 				cache_load_time = get_real_time() / 1000000L;
 		}
 
-// Download a specific variant for a model.
+// Download a specific variant for a model. Multiple variants of the same
+// code can be installed side by side, so the in-flight guard is per
+// code+variant pair.
 		public void download_model(string code, string variant_name) {
-				if(downloading_codes.contains(code)) return;
+				string dl_key = code + ":" + variant_name;
+				if(downloading_codes.contains(dl_key)) return;
 
 				TesseractModel? model = find_model(code);
 				if(model == null) return;
@@ -200,7 +213,7 @@ public class TesseractModelService : Object {
 				TesseractModelVariant? variant = find_variant(model, variant_name);
 				if(variant == null) return;
 
-				downloading_codes.insert(code, true);
+				downloading_codes.insert(dl_key, true);
 				download_started(code, variant_name);
 
 				string base_dir = get_user_models_dir();
@@ -212,7 +225,7 @@ public class TesseractModelService : Object {
 								throw new FileError.FAILED("Failed to create directory: %s", data_dir);
 						}
 				} catch(FileError e) {
-						downloading_codes.remove(code);
+						downloading_codes.remove(dl_key);
 						download_failed(code, variant_name, e.message);
 						return;
 				}
@@ -223,14 +236,14 @@ public class TesseractModelService : Object {
 										download_variant_sync(code, variant_name, variant.download_url, data_path);
 
 										Idle.add(() => {
-												downloading_codes.remove(code);
+												downloading_codes.remove(dl_key);
 												download_completed(code, variant_name);
 												return Source.REMOVE;
 										});
 								} catch(Error err) {
 										string error_message = err.message;
 										Idle.add(() => {
-												downloading_codes.remove(code);
+												downloading_codes.remove(dl_key);
 												download_failed(code, variant_name, error_message);
 												return Source.REMOVE;
 										});
@@ -238,28 +251,27 @@ public class TesseractModelService : Object {
 								return null;
 						});
 				} catch(Error err) {
-						downloading_codes.remove(code);
+						downloading_codes.remove(dl_key);
 						download_failed(code, variant_name, err.message);
 				}
 		}
 
-// Delete a user-installed model.
-		public void delete_model(string code) {
+// Delete a single installed variant of a user model. Other variants of
+// the same code remain installed.
+		public void delete_model(string code, string variant_name) {
 				string base_dir = get_user_models_dir();
+				string path = Path.build_filename(base_dir, variant_subdir_name(variant_name), code + ".traineddata");
 				try {
-						foreach(string variant in MODEL_VARIANTS) {
-								string path = Path.build_filename(base_dir, variant_subdir_name(variant), code + ".traineddata");
-								var file = File.new_for_path(path);
-								if(file.query_exists()) {
-										file.delete();
-								}
+						var file = File.new_for_path(path);
+						if(file.query_exists()) {
+								file.delete();
 						}
 				} catch(Error e) {
 						warning("Failed to delete model %s: %s", code, e.message);
 						return;
 				}
 
-				model_deleted(code);
+				model_deleted(code, variant_name);
 		}
 
 		private void download_variant_sync(
@@ -405,7 +417,7 @@ public class TesseractModelService : Object {
 										code,
 										PreferencesDialog.get_language_display_name(code)
 								);
-								model.installed_variant = get_installed_variant(code);
+								model.set_installed_variants(get_installed_variants(code));
 								model.add_variant(new TesseractModelVariant(variant_name, size, download_url));
 								table.insert(code, model);
 						} else {

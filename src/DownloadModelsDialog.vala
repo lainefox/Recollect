@@ -286,7 +286,7 @@ public class DownloadModelsDialog : Adw.Dialog {
 		private void on_download_completed(string code, string variant_name) {
 				TesseractModel? model = service.find_model(code);
 				if(model != null) {
-						model.installed_variant = variant_name;
+						model.add_installed_variant(variant_name);
 				}
 				set_variant_state(code, variant_name, VariantState.INSTALLED);
 				refresh_variant_states(code);
@@ -295,15 +295,15 @@ public class DownloadModelsDialog : Adw.Dialog {
 
 		private void on_download_failed(string code, string variant_name, string error) {
 				TesseractModel? model = service.find_model(code);
-				bool is_installed = model != null && model.installed_variant == variant_name;
+				bool is_installed = model != null && model.has_variant(variant_name);
 				set_variant_state(code, variant_name, is_installed ? VariantState.INSTALLED : VariantState.DOWNLOADABLE);
 				show_error(error);
 		}
 
-		private void on_model_deleted(string code) {
+		private void on_model_deleted(string code, string variant_name) {
 				TesseractModel? model = service.find_model(code);
 				if(model != null) {
-						model.installed_variant = null;
+						model.remove_installed_variant(variant_name);
 				}
 				refresh_variant_states(code);
 				model_changed();
@@ -324,7 +324,7 @@ public class DownloadModelsDialog : Adw.Dialog {
 						TesseractModelVariant? variant = service.find_variant(model, variant_name);
 						if(variant == null) continue;
 
-						bool is_installed = model.installed_variant == variant_name;
+						bool is_installed = model.has_variant(variant_name);
 						var variant_row = create_variant_row(model, variant_name, variant.size, is_installed);
 						expander.add_row(variant_row);
 				}
@@ -358,9 +358,16 @@ public class DownloadModelsDialog : Adw.Dialog {
 						valign = Gtk.Align.CENTER
 				};
 
-				var checkmark = new Gtk.Image.from_icon_name("check-round-outline-symbolic") {
+				// Installed state — a delete button lets the user remove this
+				// specific variant while keeping other installed variants.
+				var delete_button = new Gtk.Button() {
+						icon_name = "user-trash-symbolic",
+						tooltip_text = _("Delete %s model").printf(variant_display_name(variant_name)),
 						valign = Gtk.Align.CENTER
 				};
+				delete_button.add_css_class("flat");
+				delete_button.add_css_class("destructive-action");
+				delete_button.clicked.connect(() => service.delete_model(model.code, variant_name));
 
 				var status_stack = new Gtk.Stack() {
 						valign = Gtk.Align.CENTER,
@@ -368,7 +375,7 @@ public class DownloadModelsDialog : Adw.Dialog {
 				};
 				status_stack.add_named(download_button, "downloadable");
 				status_stack.add_named(spinner, "downloading");
-				status_stack.add_named(checkmark, "installed");
+				status_stack.add_named(delete_button, "installed");
 
 				row.add_suffix(status_stack);
 
@@ -416,7 +423,7 @@ public class DownloadModelsDialog : Adw.Dialog {
 				foreach(string variant_name in VARIANT_ORDER) {
 						if(!widgets.variant_widgets.contains(variant_name)) continue;
 
-						bool is_installed = model.installed_variant == variant_name;
+						bool is_installed = model.has_variant(variant_name);
 						set_variant_state(code, variant_name, is_installed ? VariantState.INSTALLED : VariantState.DOWNLOADABLE);
 				}
 		}

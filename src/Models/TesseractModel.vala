@@ -4,7 +4,10 @@ public class TesseractModel : Object {
 		public string code { get; construct; }
 		public string display_name { get; set; }
 		public GenericArray<TesseractModelVariant> variants { get; construct; }
-		public string? installed_variant { get; set; }
+		// All quality variants currently installed for this code. Multiple
+		// variants can coexist (each lives in its own subdir), so this is a
+		// list rather than a single value.
+		public GenericArray<string> installed_variants = new GenericArray<string>();
 
 		public TesseractModel(string code, string display_name) {
 				Object(
@@ -16,6 +19,35 @@ public class TesseractModel : Object {
 
 		public void add_variant(TesseractModelVariant variant) {
 				variants.add(variant);
+		}
+
+		public bool has_variant(string name) {
+				for(uint i = 0; i < installed_variants.length; i++) {
+						if(installed_variants.get(i) == name) return true;
+				}
+				return false;
+		}
+
+		public void add_installed_variant(string name) {
+				if(!has_variant(name)) {
+						installed_variants.add(name);
+				}
+		}
+
+		public void remove_installed_variant(string name) {
+				for(uint i = 0; i < installed_variants.length; i++) {
+						if(installed_variants.get(i) == name) {
+								installed_variants.remove_index(i);
+								return;
+						}
+				}
+		}
+
+		public void set_installed_variants(string[] names) {
+				installed_variants = new GenericArray<string>();
+				foreach(unowned string n in names) {
+						installed_variants.add(n);
+				}
 		}
 }
 
