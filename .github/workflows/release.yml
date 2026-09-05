@@ -78,6 +78,9 @@ jobs:
     permissions:
       contents: write
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Download native tarball
         uses: actions/download-artifact@v4
         with:
@@ -88,10 +91,35 @@ jobs:
         with:
           name: flatpak-bundle
 
+      - name: Extract changelog from metainfo
+        id: changelog
+        run: |
+          python3 -c '
+          import xml.etree.ElementTree as ET
+          version = "${{ github.ref_name }}".lstrip("v")
+          root = ET.parse("data/org.laine.Recollect.metainfo.xml.in").getroot()
+          found = False
+          for release in root.findall("./releases/release"):
+              if release.get("version") == version:
+                  lines = []
+                  for p in release.findall("./description/p"):
+                      lines.append(p.text or "")
+                  for ul in release.findall("./description/ul"):
+                      for li in ul.findall("li"):
+                          lines.append("- " + (li.text or ""))
+                  with open("/tmp/release_body.md", "w") as f:
+                      f.write("\n".join(lines) + "\n")
+                  found = True
+                  break
+          if not found:
+              with open("/tmp/release_body.md", "w") as f:
+                  f.write("Release " + version + "\n")
+          '
+
       - name: Create release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             recollect-${{ github.ref_name }}.tar.gz
             recollect.flatpak
-          generate_release_notes: true
+          body_path: /tmp/release_body.md

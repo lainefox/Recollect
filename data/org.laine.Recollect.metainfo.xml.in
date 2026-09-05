@@ -19,12 +19,18 @@
 		</release>
 		<release version="1.1.0" date="2026-09-06">
 			<description>
-				<p>Install multiple model qualities per language, per-variant model management, and bug fixes.</p>
+				<ul>
+					<li>Install multiple model qualities (fast, balanced, best) per language</li>
+					<li>Manage each model variant independently in the preferences dialog</li>
+					<li>Fix stale OCR model chips in the sidebar after rescanning folders</li>
+					<li>Fix Escape key not closing the sidebar</li>
+					<li>Add installation instructions for flatpak, AUR, and native tarball</li>
+				</ul>
 			</description>
 		</release>
 		<release version="1.0.0" date="2026-09-02">
 			<description>
-				<p>First stable release.</p>
+				<p>Initial release.</p>
 			</description>
 		</release>
 		<release version="0.1.0" date="2026-06-25">
