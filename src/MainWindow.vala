@@ -424,6 +424,12 @@ public class MainWindow : Adw.ApplicationWindow {
 			var copy_action = new SimpleAction("copy-image", null);
 			copy_action.activate.connect(() => copy_current_image());
 			add_action(copy_action);
+
+			// Key controller — routes printable keys to the search entry and
+			// handles Escape (close popover, clear search, close sidebar).
+			var key_controller = new Gtk.EventControllerKey();
+			key_controller.key_pressed.connect(on_window_key_pressed);
+			((Gtk.Widget) this).add_controller(key_controller);
 		}
 
 // Intercept printable key presses in the main window and redirect them to
