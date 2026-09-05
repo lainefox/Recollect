@@ -12,6 +12,11 @@
 	<screenshots>
 	</screenshots>
 	<releases>
+		<release version="1.1.0" date="2026-09-06">
+			<description>
+				<p>Install multiple model qualities per language, per-variant model management, and bug fixes.</p>
+			</description>
+		</release>
 		<release version="1.0.0" date="2026-09-02">
 			<description>
 				<p>First stable release.</p>
