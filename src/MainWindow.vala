@@ -129,7 +129,9 @@ public class MainWindow : Adw.ApplicationWindow {
 				filter_popover.set_parent(filter_button);
 				filter_popover.filters_changed.connect(() => {
 						refilter_current_results();
+						update_filter_button_state();
 				});
+				update_filter_button_state();
 
 				filter_button.clicked.connect(() => {
 						if(filter_popover.get_visible()) {
@@ -745,6 +747,15 @@ public class MainWindow : Adw.ApplicationWindow {
 						filter_button.add_css_class("has-text");
 				} else {
 						filter_button.remove_css_class("has-text");
+				}
+		}
+
+		// Highlight the funnel icon with the accent color when any filter is active.
+		private void update_filter_button_state() {
+				if(filter_popover.filters_active) {
+						filter_button.add_css_class("active");
+				} else {
+						filter_button.remove_css_class("active");
 				}
 		}
 

@@ -76,6 +76,10 @@
 	padding: 2px;
 	-gtk-icon-size: 14px;
 }
+/* When any search filter is active, tint the funnel icon with the accent color. */
+.search-filter-btn.active {
+	color: @accent_color;
+}
 /* When the search entry has text, the X icon appears — shift funnel left
  * to sit just left of the X icon (~30px from right edge). */
 .search-filter-btn.has-text {

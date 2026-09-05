@@ -9,9 +9,18 @@ public class FilterPopover : Gtk.Popover {
 
 		// ── Read-only filter state for MainWindow ──
 		public bool match_case { get; private set; default = false; }
+		public bool match_diacritics { get; private set; default = false; }
 		public bool whole_words { get; private set; default = false; }
 		public int64 date_from { get; private set; default = 0; }
 		public int64 date_to { get; private set; default = 0; }
+
+		// True when any search filter is active (case, diacritics, whole words, or date range).
+		public bool filters_active {
+			get {
+				return match_case || match_diacritics || whole_words
+						|| date_from > 0 || date_to > 0;
+			}
+		}
 
 		// ── Widgets ──
 		private Gtk.CheckButton case_check;
@@ -210,6 +219,7 @@ public class FilterPopover : Gtk.Popover {
 						filters_changed();
 				});
 				diacritics_check.toggled.connect(() => {
+						match_diacritics = diacritics_check.active;
 						settings.set_match_diacritics(diacritics_check.active);
 						filters_changed();
 				});
