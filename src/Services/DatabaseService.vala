@@ -340,12 +340,27 @@ public class DatabaseService : Object {
 
 // Save OCR model entries for an image. Splits the language string by "+"
 // and creates one row per language + accuracy combination.
+// Replaces any existing rows for this image so rescans don't accumulate
+// stale model entries (which would show as duplicate chips in the sidebar).
 		public void save_ocr_models(int64 image_id, string language_string, string accuracy) {
 				if(raw_db ==(void*) null) return;
 				string[] langs = language_string.split("+");
 				string safe_accuracy = accuracy.make_valid(-1).replace("'", "''");
 				debug("[DatabaseService] save_ocr_models: image_id=%lld langs=%s acc=%s",
 							 image_id, language_string, accuracy);
+
+				// Remove any previously-saved model rows for this image so the
+				// new set fully replaces the old one.
+				string del_sql = "DELETE FROM \"ocr_model_used\" WHERE \"image-id\" = %s"
+						.printf(image_id.to_string());
+				string? del_errmsg = null;
+				int del_rc = sqlite3_exec(raw_db, del_sql, null, null, out del_errmsg);
+				if(del_rc != 0) {
+						warning("Failed to clear old OCR models for image %lld: %s(rc=%d)",
+										image_id, del_errmsg ?? "unknown", del_rc);
+						if(del_errmsg != null) sqlite3_free((void*) del_errmsg);
+				}
+
 				foreach(string lang in langs) {
 						string safe_lang = lang.make_valid(-1).replace("'", "''");
 						string sql = "INSERT INTO \"ocr_model_used\" "
