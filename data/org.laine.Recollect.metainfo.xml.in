@@ -12,6 +12,11 @@
 	<screenshots>
 	</screenshots>
 	<releases>
+		<release version="1.1.1" date="2026-09-06">
+			<description>
+				<p>Fix desktop entry so the app always appears in the app grid with its icon.</p>
+			</description>
+		</release>
 		<release version="1.1.0" date="2026-09-06">
 			<description>
 				<p>Install multiple model qualities per language, per-variant model management, and bug fixes.</p>
