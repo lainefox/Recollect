@@ -345,6 +345,71 @@ public class SettingsService : Object {
 				settings.set_boolean("check-for-updates", enabled);
 		}
 
+		// ── Start at login (autostart) ──
+		public bool get_start_at_login() {
+				return settings.get_boolean("start-at-login");
+		}
+
+		public void set_start_at_login(bool enabled) {
+				settings.set_boolean("start-at-login", enabled);
+				if(enabled) {
+						install_autostart_entry();
+				} else {
+						remove_autostart_entry();
+				}
+		}
+
+		// Write/remove the XDG autostart desktop file in ~/.config/autostart/.
+		// The entry launches Recollect with --background so it starts headless
+		// and keeps scanning without showing a window.
+		private string get_autostart_path() {
+				return Environment.get_user_config_dir() + "/autostart/" + Config.APPLICATION_ID + ".desktop";
+		}
+
+		private void install_autostart_entry() {
+				var dir = Environment.get_user_config_dir() + "/autostart";
+				DirUtils.create_with_parents(dir, 0755);
+
+				string exec_line;
+				if(Environment.get_variable("FLATPAK_ID") != null) {
+						// Inside a flatpak sandbox: the autostart entry runs outside,
+						// so it must go through the flatpak run wrapper.
+						exec_line = "flatpak run " + Config.APPLICATION_ID + " --background";
+				} else {
+						// Native install: use the real binary path (the desktop
+						// session's PATH may not include ~/.local/bin).
+						string exe = FileUtils.read_link("/proc/self/exe");
+						exec_line = exe + " --background";
+				}
+
+				var content = "[Desktop Entry]\n"
+						+ "Type=Application\n"
+						+ "Name=Recollect\n"
+						+ "Comment=Search for text inside your images with powerful OCR technology\n"
+						+ "Exec=" + exec_line + "\n"
+						+ "Icon=" + Config.APPLICATION_ID + "\n"
+						+ "Terminal=false\n"
+						+ "Categories=GTK;Utility;\n"
+						+ "X-GNOME-Autostart-enabled=true\n";
+
+				try {
+						FileUtils.set_contents(get_autostart_path(), content);
+				} catch(Error e) {
+						warning("Could not write autostart entry: %s", e.message);
+				}
+		}
+
+		private void remove_autostart_entry() {
+				var path = get_autostart_path();
+				if(FileUtils.test(path, FileTest.EXISTS)) {
+						try {
+								FileUtils.remove(path);
+						} catch(Error e) {
+								warning("Could not remove autostart entry: %s", e.message);
+						}
+				}
+		}
+
 		// ── Quality tier detection ──
 
 // Find the tessdata directory by checking TESSDATA_PREFIX and common paths.

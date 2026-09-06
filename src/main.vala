@@ -13,6 +13,10 @@ public static int main(string[] args) {
 						did_reset = true;
 				} else if(arg == "--no-system-models") {
 						Environment.set_variable("RECOLLECT_NO_SYSTEM_MODELS", "1", true);
+				} else if(arg == "--background") {
+						// Start without a window (used by the autostart entry).
+						// The app keeps running and scanning in the background.
+						Environment.set_variable("RECOLLECT_BACKGROUND", "1", true);
 				} else {
 						filtered_args += arg;
 				}

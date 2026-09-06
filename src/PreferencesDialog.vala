@@ -17,6 +17,7 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 		private Adw.PreferencesPage general_page;
 		private Adw.SwitchRow background_scan_row;
 		private Adw.SwitchRow incremental_scan_row;
+		private Adw.SwitchRow start_at_login_row;
 		private Adw.SwitchRow hidden_folders_row;
 
 		// Updates group
@@ -49,6 +50,7 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				// Set initial values from settings
 				background_scan_row.active = settings.get_background_scan();
 				incremental_scan_row.active = settings.get_incremental_scan();
+				start_at_login_row.active = settings.get_start_at_login();
 				hidden_folders_row.active = settings.get_scan_hidden_folders();
 
 				// Connect signals
@@ -66,6 +68,9 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				});
 				incremental_scan_row.notify["active"].connect(() => {
 						settings.set_incremental_scan(incremental_scan_row.active);
+				});
+				start_at_login_row.notify["active"].connect(() => {
+						settings.set_start_at_login(start_at_login_row.active);
 				});
 				hidden_folders_row.notify["active"].connect(() => {
 						settings.set_scan_hidden_folders(hidden_folders_row.active);
@@ -311,6 +316,11 @@ public class PreferencesDialog : Adw.PreferencesDialog {
 				incremental_scan_row.title = _("Incremental Scanning");
 				incremental_scan_row.subtitle = _("Monitor folders for file changes");
 				behavior_group.add(incremental_scan_row);
+
+				start_at_login_row = new Adw.SwitchRow();
+				start_at_login_row.title = _("Start at Login");
+				start_at_login_row.subtitle = _("Launch Recollect in the background when you log in");
+				behavior_group.add(start_at_login_row);
 
 				general_page.add(behavior_group);
 

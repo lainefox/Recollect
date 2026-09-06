@@ -118,5 +118,12 @@
 			<description>Whether to check for newer versions of Recollect on startup</description>
 		</key>
 
+		<!-- Start at login -->
+		<key type="b" name="start-at-login">
+			<default>false</default>
+			<summary>Start at login</summary>
+			<description>Launch Recollect in the background when you log in</description>
+		</key>
+
 	</schema>
 </schemalist>

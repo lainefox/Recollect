@@ -7,11 +7,16 @@ public class Application : Adw.Application {
 		private UpdateService update_service;
 		public MainWindow? main_window;
 
+		// True when launched with --background (autostart): run headless.
+		private bool background_mode = false;
+		private bool background_launch_handled = false;
+
 		public Application() {
 				Object(
 						application_id: Config.APPLICATION_ID,
 						flags: ApplicationFlags.HANDLES_OPEN
 				);
+				background_mode = Environment.get_variable("RECOLLECT_BACKGROUND") == "1";
 		}
 
 		protected override void startup() {
@@ -178,6 +183,14 @@ public class Application : Adw.Application {
 
 		protected override void activate() {
 				base.activate();
+
+				// Background launch (autostart): run headless — no window.
+				// The process stays alive via hold() (background scanning),
+				// and a later normal launch presents the window.
+				if(background_mode && !background_launch_handled) {
+						background_launch_handled = true;
+						return;
+				}
 
 				var window = get_active_window();
 				if(window == null) {
