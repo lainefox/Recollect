@@ -16,6 +16,7 @@
 		"--filesystem=home",
 		"--talk-name=org.freedesktop.portal.FileChooser",
 		"--talk-name=org.freedesktop.portal.OpenURI",
+		"--talk-name=org.freedesktop.FileManager1",
 		"--env=TESSDATA_PREFIX=/app/share/tessdata"
 	],
 	"build-options": {

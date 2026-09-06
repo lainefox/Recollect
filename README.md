@@ -36,45 +36,6 @@ Precompiled flatpak bundles are attached to each [GitHub release](https://github
 flatpak install --user recollect.flatpak
 ```
 
-> **Always use `--user`.** Installing at system level (`sudo flatpak install`) can leave orphaned files behind if an uninstall is interrupted, which breaks the desktop icon and app entry.
-
-### Troubleshooting: missing desktop icon
-
-If the app launches but shows no icon (or doesn't appear in the app grid), the most common cause is a **stale native-install desktop file** shadowing the flatpak one. The native install (`meson install` to `~/.local`) writes `~/.local/share/applications/org.laine.Recollect.desktop` with `Exec=recollect` — a bare command that GIO can't resolve (the desktop shell's `PATH` doesn't include `~/.local/bin`), which makes the app vanish from the app grid entirely.
-
-Check if a native desktop file exists:
-
-```bash
-cat ~/.local/share/applications/org.laine.Recollect.desktop
-```
-
-If it has `Exec=recollect` (not an absolute path), remove it and reinstall the flatpak:
-
-```bash
-rm ~/.local/share/applications/org.laine.Recollect.desktop
-flatpak install --user recollect.flatpak
-```
-
-> Since v1.1.0 the native desktop file uses an absolute `Exec` path, so this conflict no longer occurs for fresh installs. If you still see a bare `Exec=recollect`, rebuild and reinstall from source.
-
-If the app still doesn't appear, a previous system-level install may have left broken export symlinks. Check for them:
-
-```bash
-ls -la /var/lib/flatpak/exports/share/applications/org.laine.Recollect.desktop
-```
-
-If the symlink is broken (points to a non-existent `current/active` path), remove the orphaned install and refresh the caches:
-
-```bash
-sudo rm -rf /var/lib/flatpak/app/org.laine.Recollect /var/lib/flatpak/exports/bin/org.laine.Recollect /var/lib/flatpak/exports/share/applications/org.laine.Recollect.desktop /var/lib/flatpak/exports/share/icons/hicolor/scalable/apps/org.laine.Recollect.svg /var/lib/flatpak/exports/share/icons/hicolor/symbolic/apps/org.laine.Recollect-symbolic.svg /var/lib/flatpak/exports/share/metainfo/org.laine.Recollect.metainfo.xml
-```
-
-```bash
-sudo gtk-update-icon-cache -f /var/lib/flatpak/exports/share/icons/hicolor/ && sudo update-desktop-database /var/lib/flatpak/exports/share/applications/
-```
-
-Then reinstall with `flatpak install --user recollect.flatpak`.
-
 ## Building from source
 
 ### Dependencies (Arch Linux)

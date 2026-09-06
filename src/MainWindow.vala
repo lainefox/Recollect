@@ -1089,10 +1089,35 @@ public class MainWindow : Adw.ApplicationWindow {
 						return;
 				}
 				var file = GLib.File.new_for_path(current_selected_entry.path);
-				// Try DBus ShowItems first to highlight the file in the file manager
+				var uri = file.get_uri();
+
+				// Try DBus ShowItems first to highlight the file in the file manager.
+				// Works on GNOME (nautilus) and KDE (Dolphin); the flatpak manifest
+				// allows talking to org.freedesktop.FileManager1.
+				if(try_show_items(uri)) {
+						return;
+				}
+
+				// Fallback: open the parent folder.
+				var parent = file.get_parent();
+				if(parent == null) {
+						return;
+				}
+				var parent_uri = parent.get_uri();
+				if(open_folder_via_portal(parent_uri)) {
+						return;
+				}
+				try {
+						AppInfo.launch_default_for_uri(parent_uri, null);
+				} catch(Error e) {
+						warning("Failed to open containing folder: %s", e.message);
+				}
+		}
+
+		// Ask the file manager to reveal the file (org.freedesktop.FileManager1).
+		private bool try_show_items(string uri) {
 				try {
 						var connection = Bus.get_sync(BusType.SESSION);
-						var uri = file.get_uri();
 						var variant = new Variant.tuple(new Variant[] {
 								new Variant.strv(new string[] { uri }),
 								new Variant.string("")
@@ -1107,17 +1132,38 @@ public class MainWindow : Adw.ApplicationWindow {
 								DBusCallFlags.NONE,
 								3000,
 								null);
-						return;
-				} catch(Error dbus_error) {
-						// DBus not available — fall back to just opening the folder
+						return true;
+				} catch(Error e) {
+						return false;
+				}
+		}
+
+		// Inside flatpak, open a folder through the XDG Desktop Portal — the
+		// sandbox blocks launching the host file manager directly.
+		private bool open_folder_via_portal(string uri) {
+				if(Environment.get_variable("FLATPAK_ID") == null) {
+						return false;
 				}
 				try {
-						var parent = file.get_parent();
-						if(parent != null) {
-								AppInfo.launch_default_for_uri(parent.get_uri(), null);
-						}
+						var connection = Bus.get_sync(BusType.SESSION);
+						var options = Variant.parse(new VariantType("a{sv}"), "{}");
+						var variant = new Variant.tuple(new Variant[] {
+								new Variant.string(uri),
+								options
+						});
+						connection.call(
+								"org.freedesktop.portal.Desktop",
+								"/org/freedesktop/portal/desktop",
+								"org.freedesktop.portal.OpenURI",
+								"OpenURI",
+								variant,
+								null,
+								DBusCallFlags.NONE,
+								3000,
+								null);
+						return true;
 				} catch(Error e) {
-						warning("Failed to open containing folder: %s", e.message);
+						return false;
 				}
 		}
 
