@@ -12,6 +12,14 @@
 	<screenshots>
 	</screenshots>
 	<releases>
+		<release version="1.2.0" date="2026-09-06">
+			<description>
+				<ul>
+					<li>Add --background launch option and Start at Login toggle</li>
+					<li>Fix open containing folder not working in the flatpak on KDE</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.1.1" date="2026-09-06">
 			<description>
 				<p>Fix desktop entry so the app always appears in the app grid with its icon.</p>
