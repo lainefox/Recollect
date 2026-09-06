@@ -63,17 +63,23 @@ If the app still doesn't appear, a previous system-level install may have left b
 ls -la /var/lib/flatpak/exports/share/applications/org.laine.Recollect.desktop
 ```
 
-If the symlink is broken (points to a non-existent `current/active` path), remove the orphaned install and refresh the caches:
+If the symlink is broken (points to a non-existent `current/active` path), run the bundled repair script — it detects the orphaned deployment and broken exports, removes only what's broken, and refreshes the caches:
 
 ```bash
-sudo rm -rf /var/lib/flatpak/app/org.laine.Recollect /var/lib/flatpak/exports/bin/org.laine.Recollect /var/lib/flatpak/exports/share/applications/org.laine.Recollect.desktop /var/lib/flatpak/exports/share/icons/hicolor/scalable/apps/org.laine.Recollect.svg /var/lib/flatpak/exports/share/icons/hicolor/symbolic/apps/org.laine.Recollect-symbolic.svg /var/lib/flatpak/exports/share/metainfo/org.laine.Recollect.metainfo.xml
-```
-
-```bash
-sudo gtk-update-icon-cache -f /var/lib/flatpak/exports/share/icons/hicolor/ && sudo update-desktop-database /var/lib/flatpak/exports/share/applications/
+build-aux/fix-flatpak-exports.sh
 ```
 
 Then reinstall with `flatpak install --user recollect.flatpak`.
+
+> The script never touches a healthy install — it only removes things that are already broken. If you prefer to do it by hand, the equivalent commands are:
+
+> ```bash
+> sudo rm -rf /var/lib/flatpak/app/org.laine.Recollect /var/lib/flatpak/exports/bin/org.laine.Recollect /var/lib/flatpak/exports/share/applications/org.laine.Recollect.desktop /var/lib/flatpak/exports/share/icons/hicolor/scalable/apps/org.laine.Recollect.svg /var/lib/flatpak/exports/share/icons/hicolor/symbolic/apps/org.laine.Recollect-symbolic.svg /var/lib/flatpak/exports/share/metainfo/org.laine.Recollect.metainfo.xml
+> ```
+>
+> ```bash
+> sudo gtk-update-icon-cache -f /var/lib/flatpak/exports/share/icons/hicolor/ && sudo update-desktop-database /var/lib/flatpak/exports/share/applications/
+> ```
 
 ## Building from source
 
@@ -150,6 +156,7 @@ meson compile -C build
 |------|-------------|
 | `--reset` | Reset all settings to defaults |
 | `--no-system-models` | Skip system Tesseract models; only use downloaded ones |
+| `--background` | Start without a window (used by the autostart entry) |
 
 ## AI Disclosure
 
