@@ -12,7 +12,18 @@
 	<screenshots>
 	</screenshots>
 	<releases>
-		<release version="1.2.0" date="2026-09-06">
+		<!-- Release timestamps are full ISO 8601 date-times: flatpak and the
+		     software centres pick the app version from the newest <release>, and
+		     entries sharing only a date are ambiguous to sort. -->
+		<release version="1.2.1" date="2026-09-25T10:07:02Z">
+			<description>
+				<ul>
+					<li>Fix the app version reported for the flatpak build</li>
+					<li>Release workflow now verifies the bundled version matches the tag</li>
+				</ul>
+			</description>
+		</release>
+		<release version="1.2.0" date="2026-09-06T01:11:06Z">
 			<description>
 				<ul>
 					<li>Add --background launch option and Start at Login toggle</li>
@@ -20,12 +31,12 @@
 				</ul>
 			</description>
 		</release>
-		<release version="1.1.1" date="2026-09-06">
+		<release version="1.1.1" date="2026-09-05T22:26:07Z">
 			<description>
 				<p>Fix desktop entry so the app always appears in the app grid with its icon.</p>
 			</description>
 		</release>
-		<release version="1.1.0" date="2026-09-06">
+		<release version="1.1.0" date="2026-09-05T21:09:13Z">
 			<description>
 				<ul>
 					<li>Install multiple model qualities (fast, balanced, best) per language</li>

@@ -15,6 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Check that the sources agree on the version
+        run: build-aux/ci/check-version.sh "${{ github.ref_name }}"
+
       - name: Install dependencies
         run: |
           dnf install -y --refresh \
@@ -64,6 +67,15 @@ jobs:
           manifest-path: build-aux/flatpak/org.laine.Recollect.json
           cache-key: flatpak-builder-${{ github.ref_name }}
           cache: true
+
+      - name: Chime
+        # Best effort: the script always exits 0, this only keeps a surprise in
+        # a cosmetic step from ever failing a release.
+        continue-on-error: true
+        run: build-aux/ci/chime.sh
+
+      - name: Verify the bundle reports the released version
+        run: build-aux/ci/check-version.sh "${{ github.ref_name }}" recollect.flatpak
 
       - name: Upload flatpak artifact
         uses: actions/upload-artifact@v4
