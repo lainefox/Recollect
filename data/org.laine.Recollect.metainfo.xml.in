@@ -15,6 +15,14 @@
 		<!-- Release timestamps are full ISO 8601 date-times: flatpak and the
 		     software centres pick the app version from the newest <release>, and
 		     entries sharing only a date are ambiguous to sort. -->
+		<release version="1.3.0" date="2026-09-25T17:35:59Z">
+			<description>
+				<ul>
+					<li>Add fuzzy search, off by default and found in the search filter menu</li>
+					<li>Rank fuzzy results by how close the match is, and highlight the matched characters</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.2.1" date="2026-09-25T10:07:02Z">
 			<description>
 				<ul>
