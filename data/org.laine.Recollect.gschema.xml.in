@@ -81,9 +81,9 @@
 
 		<!-- Search filter options -->
 		<key type="b" name="fuzzy-search">
-			<default>true</default>
+			<default>false</default>
 			<summary>Fuzzy search enabled</summary>
-			<description>Use fuzzy matching when searching image text content</description>
+			<description>Match the search characters in any order instead of as a literal substring, and list the closest matches first</description>
 		</key>
 
 		<key type="b" name="match-case">

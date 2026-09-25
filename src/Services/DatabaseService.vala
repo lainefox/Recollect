@@ -84,7 +84,7 @@ public class DatabaseService : Object {
 		// virtualize rendering — only visible rows create widgets. Loading
 		// thousands of items into the model is O(1) from GTK's perspective.
 		public ImageEntry[]? search_images(string query, bool match_case = false,
-																				bool whole_words = false,
+																				bool whole_words = false, bool fuzzy = false,
 																				SortCriteria sort_criteria = SortCriteria.DATE,
 																				SortDirection sort_direction = SortDirection.DESCENDING,
 																				int64 date_from = 0, int64 date_to = 0) {
@@ -94,7 +94,7 @@ public class DatabaseService : Object {
 						return query_raw_batch(0, 0, sort_criteria, sort_direction,
 																	 date_from, date_to);
 				} else {
-						return query_text_batch(query, 0, 0, match_case, whole_words,
+						return query_text_batch(query, 0, 0, match_case, whole_words, fuzzy,
 																		sort_criteria, sort_direction,
 																		date_from, date_to);
 				}
@@ -106,7 +106,7 @@ public class DatabaseService : Object {
 // and stack-overflow crashes that the old Gom-based "load all + quicksort"
 // approach caused with thousands of images.
 		private ImageEntry[]? query_text_batch(string query, int offset, int limit,
-																					 bool match_case, bool whole_words,
+																					 bool match_case, bool whole_words, bool fuzzy,
 																					 SortCriteria sort_criteria,
 																					 SortDirection sort_direction,
 																					 int64 date_from, int64 date_to) {
@@ -115,7 +115,20 @@ public class DatabaseService : Object {
 
 				string escaped = query.replace("'", "''");
 				string where_clause = "";
-				if(whole_words) {
+
+				// Fuzzy matching ranks candidates in Vala(FuzzyMatcher), so all SQL has to do is
+				// narrow the table down to the rows that could match at all. Whole words wins over
+				// fuzzy: it is an exact filter that fuzzy ranking would only blur.
+				string needle = "";
+				bool use_fuzzy = fuzzy && !whole_words;
+				if(use_fuzzy) {
+						needle = FuzzyMatcher.prepare_query(query, match_case);
+						use_fuzzy = needle.length > 0;
+				}
+
+				if(use_fuzzy) {
+						where_clause = build_fuzzy_prefilter(needle, match_case);
+				} else if(whole_words) {
 						if(match_case) {
 								where_clause = "(\"text-content\" GLOB '* %s *' OR \"text-content\" GLOB '%s *' OR \"text-content\" GLOB '* %s' OR \"text-content\" = '%s')".printf(
 										escaped, escaped, escaped, escaped);
@@ -144,46 +157,54 @@ public class DatabaseService : Object {
 						: "\"file-created-at\"";
 				string order_dir = sort_direction == SortDirection.ASCENDING ? "ASC" : "DESC";
 
-				// Get total count first
-				string count_sql = "SELECT COUNT(*) FROM \"image_entry\" WHERE %s".printf(where_clause);
-				void* stmt = null;
-				int rc = sqlite3_prepare_v2(raw_db, count_sql, -1, out stmt, null);
-				if(rc != 0) return null;
-				int64 total = 0;
-				if(sqlite3_step(stmt) == SQLITE_ROW) {
-						total = sqlite3_column_int64(stmt, 0);
+				// The count is only needed to clamp a page size. The fuzzy path fetches
+				// every candidate row and ranks it in Vala, so it skips the count and
+				// saves a full scan of the table; "no rows" is caught by the fetch loop
+				// instead, which returns the same null as the count check used to.
+				// GLib's int has no MAX_VALUE in this vapi, so spell it out
+				int fetch_count = 0x7fffffff;
+				string limit_sql = "-1";
+				if(limit > 0) {
+						fetch_count = limit;
+						limit_sql = "%d".printf(limit);
 				}
-				sqlite3_finalize(stmt);
-				if(total == 0) return null;
-				if(offset >=(int) total) return null;
+				if(!use_fuzzy) {
+						// Get total count first
+						string count_sql = "SELECT COUNT(*) FROM \"image_entry\" WHERE %s".printf(where_clause);
+						void* stmt = null;
+						int rc = sqlite3_prepare_v2(raw_db, count_sql, -1, out stmt, null);
+						if(rc != 0) return null;
+						int64 total = 0;
+						if(sqlite3_step(stmt) == SQLITE_ROW) {
+								total = sqlite3_column_int64(stmt, 0);
+						}
+						sqlite3_finalize(stmt);
+						if(total == 0) return null;
+						if(offset >=(int) total) return null;
 
-				int fetch_count = limit > 0 ? int.min(limit,(int) total - offset) :(int) total - offset;
+						fetch_count = limit > 0 ? int.min(limit,(int) total - offset) :(int) total - offset;
+						limit_sql = "%d".printf(fetch_count);
+				}
 
 				string query_sql = "SELECT \"id\",\"path\",\"text-content\",\"scanned-at\","
 						+ "\"file-created-at\",\"folder-id\",\"accuracy-level\",\"ocr-language\","
 						+ "\"file-size\",\"mime-type\""
-						+ " FROM \"image_entry\" WHERE %s ORDER BY %s %s LIMIT %d OFFSET %d".printf(
-								where_clause, order_col, order_dir, fetch_count, offset);
+						+ " FROM \"image_entry\" WHERE %s ORDER BY %s %s LIMIT %s OFFSET %d".printf(
+								where_clause, order_col, order_dir, limit_sql, offset);
 
-				stmt = null;
-				rc = sqlite3_prepare_v2(raw_db, query_sql, -1, out stmt, null);
+				void* stmt = null;
+				int rc = sqlite3_prepare_v2(raw_db, query_sql, -1, out stmt, null);
 				if(rc != 0) return null;
+
+				if(use_fuzzy) {
+						return collect_fuzzy_matches(stmt, needle, match_case, fetch_count);
+				}
 
 				var batch = new ImageEntry[fetch_count];
 				int idx = 0;
 				while(sqlite3_step(stmt) == SQLITE_ROW) {
 						if(idx >= fetch_count) break;
-						var entry = new ImageEntry();
-						entry.id = sqlite3_column_int64(stmt, 0);
-						entry.path =(sqlite3_column_text(stmt, 1) ?? "").make_valid(-1);
-						entry.text_content =(sqlite3_column_text(stmt, 2) ?? "").make_valid(-1);
-						entry.scanned_at = sqlite3_column_int64(stmt, 3);
-						entry.file_created_at = sqlite3_column_int64(stmt, 4);
-						entry.folder_id = sqlite3_column_int64(stmt, 5);
-						entry.accuracy_level =(sqlite3_column_text(stmt, 6) ?? "").make_valid(-1);
-						entry.ocr_language =(sqlite3_column_text(stmt, 7) ?? "").make_valid(-1);
-						entry.file_size = sqlite3_column_int64(stmt, 8);
-						entry.mime_type =(sqlite3_column_text(stmt, 9) ?? "").make_valid(-1);
+						var entry = read_entry(stmt);
 						truncate_text_content(entry);
 						batch[idx++] = entry;
 				}
@@ -195,12 +216,131 @@ public class DatabaseService : Object {
 				return batch;
 		}
 
+// A cheap candidate filter for fuzzy queries: every character of the query has
+// to appear somewhere in the text. The order of those characters does not
+// matter here, that is FuzzyMatcher's job. All of them go into a single GLOB
+// character class, so this costs one table scan instead of one scan per
+// character. "1" is returned when no character can be turned into a pattern,
+// which leaves all the work to FuzzyMatcher.
+		private string build_fuzzy_prefilter(string needle, bool match_case) {
+				var chars = new GLib.StringBuilder();
+				bool[] seen = new bool[256];
+				for(int i = 0; i < needle.length; i++) {
+						uint8 c = needle[i];
+						// Non-ASCII cannot be prefiltered, since SQLite's GLOB has no
+						// case folding at all, and the characters GLOB gives a meaning
+						// inside a character class are left out as well. Duplicates are
+						// harmless, but they make the pattern longer for no gain.
+						if(c >= 0x80 || c == '*' || c == '?' || c == '[' || c == ']' || c == '-'
+									|| c == '^' || seen[c]) {
+								continue;
+						}
+						seen[c] = true;
+						// GLOB is case sensitive, so a case insensitive search has to
+						// accept either case.
+						if(!match_case && c >= 'a' && c <= 'z') {
+								chars.append("%c%c".printf((char) (c - 32), (char) c));
+						} else {
+								chars.append("%c".printf((char) c));
+						}
+				}
+				if(chars.str.length == 0) {
+						return "1";
+				}
+				// A quote has to be doubled to survive inside the SQL literal.
+				string literal = chars.str.replace("'", "''");
+				return "\"text-content\" GLOB '*[%s]*'".printf(literal);
+		}
+
+// Read the rows of a prepared statement, keep the ones FuzzyMatcher matches, and
+// return them best match first. The sort is stable, so entries with the same
+// score keep the order the query returned them in (date, file size, path, ...
+// depending on the sort criteria).
+		private ImageEntry[]? collect_fuzzy_matches(void* stmt, string needle,
+																								 bool match_case, int fetch_count) {
+				var scored = new GLib.List<ScoredEntry>();
+				int kept = 0;
+				while(sqlite3_step(stmt) == SQLITE_ROW) {
+						if(kept >= fetch_count) {
+								break;
+						}
+						var entry = read_entry(stmt);
+						var match = FuzzyMatcher.match(needle, entry.text_content, match_case);
+						if(match == null) {
+								continue;
+						}
+						// Score the full text, then keep the snippet around the match so
+						// the list view has something to highlight.
+						truncate_text_content_around(entry, match.positions[0]);
+						scored.append(new ScoredEntry(entry, match.score));
+						kept++;
+				}
+				sqlite3_finalize(stmt);
+
+				int count = (int) scored.length();
+				if(count == 0) {
+						return null;
+				}
+
+				scored.sort(ScoredEntry.compare_by_relevance);
+				var batch = new ImageEntry[count];
+				int i = 0;
+				foreach(var scored_entry in scored) {
+						batch[i++] = scored_entry.entry;
+				}
+				return batch;
+		}
+
+// Read one image_entry row from a prepared SELECT of the column list used by the
+// queries above.
+		private ImageEntry read_entry(void* stmt) {
+				var entry = new ImageEntry();
+				entry.id = sqlite3_column_int64(stmt, 0);
+				entry.path =(sqlite3_column_text(stmt, 1) ?? "").make_valid(-1);
+				entry.text_content =(sqlite3_column_text(stmt, 2) ?? "").make_valid(-1);
+				entry.scanned_at = sqlite3_column_int64(stmt, 3);
+				entry.file_created_at = sqlite3_column_int64(stmt, 4);
+				entry.folder_id = sqlite3_column_int64(stmt, 5);
+				entry.accuracy_level =(sqlite3_column_text(stmt, 6) ?? "").make_valid(-1);
+				entry.ocr_language =(sqlite3_column_text(stmt, 7) ?? "").make_valid(-1);
+				entry.file_size = sqlite3_column_int64(stmt, 8);
+				entry.mime_type =(sqlite3_column_text(stmt, 9) ?? "").make_valid(-1);
+				return entry;
+		}
+
 // Truncate text_content to a short snippet to keep memory usage low.
 // The full text is retrieved on demand via get_full_text_content().
 		private void truncate_text_content(ImageEntry entry) {
 				if(entry.text_content != null && entry.text_content.length > 200) {
 						entry.text_content = entry.text_content.substring(0, 200) + "…";
 				}
+		}
+
+// Same, but centred on the match: a fuzzy hit can land well past the first 200
+// characters, and a snippet without it would show nothing of what matched.
+// @match_start is a byte offset into the untruncated text.
+		private void truncate_text_content_around(ImageEntry entry, int match_start) {
+				const int WINDOW = 200;
+				string text = entry.text_content;
+				if(text == null || text.length <= WINDOW) {
+						return;
+				}
+
+				int start = int.max(0, int.min(match_start - WINDOW / 2, text.length - WINDOW));
+				int end = start + WINDOW;
+
+				// Never cut in the middle of a multi-byte character.
+				while(start > 0 && (text[start] & 0xc0) == 0x80) {
+						start--;
+				}
+				while(end < text.length && (text[end] & 0xc0) == 0x80) {
+						end++;
+				}
+
+				entry.text_content = "%s%s%s".printf(
+						start > 0 ? "…" : "",
+						text.substring(start, end - start),
+						end < text.length ? "…" : "");
 		}
 
 // Retrieve an image's database ID by its file path.
@@ -1099,5 +1239,21 @@ public class DatabaseService : Object {
 						adapter = null;
 				}
 				repository = null;
+		}
+}
+
+// An image entry paired with the relevance score a fuzzy search gave it. Lower
+// scores are better matches.
+internal class ScoredEntry : Object {
+		public ImageEntry entry;
+		public double score;
+
+		public ScoredEntry(ImageEntry entry, double score) {
+			this.entry = entry;
+			this.score = score;
+		}
+
+		public static int compare_by_relevance(ScoredEntry a, ScoredEntry b) {
+				return a.score < b.score ? -1 : (a.score > b.score ? 1 : 0);
 		}
 }

@@ -207,6 +207,7 @@ public class ResultsGridView : Gtk.Box {
 		// Load ALL matching images from the database into the list store.
 		// GTK GridView virtualizes rendering — only visible tiles get widgets.
 		public void search(string query, bool match_case = false, bool whole_words = false,
+												bool fuzzy = false,
 												SortCriteria sort_criteria = SortCriteria.DATE, SortDirection sort_direction = SortDirection.DESCENDING,
 												int64 date_from = 0, int64 date_to = 0) {
 				current_query = query;
@@ -219,7 +220,7 @@ public class ResultsGridView : Gtk.Box {
 				displayed_paths.remove_all();
 				no_results_page.visible = false;
 
-				var results = db.search_images(query, match_case, whole_words,
+				var results = db.search_images(query, match_case, whole_words, fuzzy,
 																			 sort_criteria, sort_direction,
 																			 date_from, date_to);
 				if(results == null || results.length == 0) {

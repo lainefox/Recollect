@@ -28,6 +28,7 @@ recollect_sources = [
   'Services/UpdateService.vala',
 
   # Utils
+  'Utils/FuzzyMatcher.vala',
   'Utils/Utils.vala',
 
   # Views

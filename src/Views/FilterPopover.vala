@@ -11,13 +11,14 @@ public class FilterPopover : Gtk.Popover {
 		public bool match_case { get; private set; default = false; }
 		public bool match_diacritics { get; private set; default = false; }
 		public bool whole_words { get; private set; default = false; }
+		public bool fuzzy { get; private set; default = false; }
 		public int64 date_from { get; private set; default = 0; }
 		public int64 date_to { get; private set; default = 0; }
 
-		// True when any search filter is active (case, diacritics, whole words, or date range).
+		// True when any search filter is active (case, diacritics, whole words, fuzzy, or date range).
 		public bool filters_active {
 			get {
-				return match_case || match_diacritics || whole_words
+				return match_case || match_diacritics || whole_words || fuzzy
 						|| date_from > 0 || date_to > 0;
 			}
 		}
@@ -26,6 +27,7 @@ public class FilterPopover : Gtk.Popover {
 		private Gtk.CheckButton case_check;
 		private Gtk.CheckButton diacritics_check;
 		private Gtk.CheckButton whole_words_check;
+		private Gtk.CheckButton fuzzy_check;
 		private Gtk.Stack filter_stack;
 		private Gtk.Calendar date_calendar;
 		private Gtk.Button before_date_button;
@@ -65,6 +67,21 @@ public class FilterPopover : Gtk.Popover {
 				whole_words_check.active = settings.get_whole_words();
 				whole_words_check.tooltip_text = _("Only match whole words, not substrings");
 				filter_box.append(whole_words_check);
+
+				fuzzy_check = new Gtk.CheckButton.with_label(_("Fuzzy search"));
+				fuzzy_check.active = settings.get_fuzzy_search();
+				fuzzy_check.tooltip_text = _("Match characters in any order, ranking the closest matches first");
+				filter_box.append(fuzzy_check);
+
+				// Fuzzy ranking is a looser way of matching than whole words, so
+				// offering both at once would only blur the whole word filter.
+				whole_words_check.toggled.connect(() => {
+						fuzzy_check.sensitive = !whole_words_check.active;
+						if(whole_words_check.active && fuzzy_check.active) {
+								fuzzy_check.active = false;
+						}
+				});
+				fuzzy_check.sensitive = !whole_words_check.active;
 
 				// ── Date range filter ──
 				filter_box.append(new Gtk.Separator(Gtk.Orientation.HORIZONTAL));
@@ -226,6 +243,11 @@ public class FilterPopover : Gtk.Popover {
 				whole_words_check.toggled.connect(() => {
 						whole_words = whole_words_check.active;
 						settings.set_whole_words(whole_words);
+						filters_changed();
+				});
+				fuzzy_check.toggled.connect(() => {
+						fuzzy = fuzzy_check.active;
+						settings.set_fuzzy_search(fuzzy);
 						filters_changed();
 				});
 		}

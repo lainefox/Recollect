@@ -64,6 +64,7 @@ public class MainWindow : Adw.ApplicationWindow {
 		private string current_search_query = "";
 		private bool current_match_case = false;
 		private bool current_whole_words = false;
+		private bool current_fuzzy = false;
 		private Gtk.MenuButton sort_button;
 
 		// Date filter state (synced from FilterPopover)
@@ -786,11 +787,13 @@ public class MainWindow : Adw.ApplicationWindow {
 						// Perform search with current filter settings
 						bool match_case = settings.get_match_case();
 						bool whole_words = settings.get_whole_words();
+						bool fuzzy = settings.get_fuzzy_search();
 
 						// Track current search state for lazy view population
 						current_search_query = query;
 						current_match_case = match_case;
 						current_whole_words = whole_words;
+						current_fuzzy = fuzzy;
 
 						populate_active_view();
 						stack.set_visible_child_name("results");
@@ -807,6 +810,7 @@ public class MainWindow : Adw.ApplicationWindow {
 				current_search_query = "";
 				current_match_case = false;
 				current_whole_words = false;
+				current_fuzzy = false;
 
 				uint count = database.get_all_images_count();
 				uint folder_count = database.get_all_folders_count();
@@ -830,13 +834,13 @@ public class MainWindow : Adw.ApplicationWindow {
 				if(is_list) {
 						if(list_view != null) {
 								list_view.search(current_search_query, current_match_case, current_whole_words,
-																	current_sort_criteria, current_sort_direction,
+																	current_fuzzy, current_sort_criteria, current_sort_direction,
 																	current_date_from, current_date_to);
 						}
 				} else {
 						if(grid_view != null) {
 								grid_view.search(current_search_query, current_match_case, current_whole_words,
-																	current_sort_criteria, current_sort_direction,
+																	current_fuzzy, current_sort_criteria, current_sort_direction,
 																	current_date_from, current_date_to);
 						}
 				}
@@ -855,6 +859,7 @@ public class MainWindow : Adw.ApplicationWindow {
 				// in sync with the checkbox widgets before emitting filters_changed.
 				current_match_case = filter_popover.match_case;
 				current_whole_words = filter_popover.whole_words;
+				current_fuzzy = filter_popover.fuzzy;
 				current_date_from = filter_popover.date_from;
 				current_date_to = filter_popover.date_to;
 

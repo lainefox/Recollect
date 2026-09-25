@@ -85,6 +85,7 @@ public class ResultsListView : Gtk.Box {
 	private string current_query = "";
 	private bool current_match_case = false;
 	private bool current_whole_words = false;
+	private bool current_fuzzy = false;
 	private SortCriteria current_sort_criteria = SortCriteria.DATE;
 	private SortDirection current_sort_direction = SortDirection.DESCENDING;
 	private int64 current_date_from = 0;
@@ -197,7 +198,7 @@ public class ResultsListView : Gtk.Box {
 			string snippet =(entry.text_content ?? _("No text found")).make_valid(-1);
 			// Highlight the searched phrase when there is an active query.
 			if(current_query.length > 0) {
-				label.set_markup(highlight_query(snippet, current_query, current_match_case, current_whole_words));
+				label.set_markup(highlight_query(snippet, current_query, current_match_case, current_whole_words, current_fuzzy));
 			} else {
 				label.label = snippet;
 			}
@@ -370,11 +371,13 @@ public class ResultsListView : Gtk.Box {
 	// GTK ColumnView virtualizes rendering — only visible rows get widgets.
 	// Thousands of items in the model is fine; GTK handles it like Nautilus.
 	public void search(string query, bool match_case = false, bool whole_words = false,
+											bool fuzzy = false,
 											SortCriteria sort_criteria = SortCriteria.DATE, SortDirection sort_direction = SortDirection.DESCENDING,
 											int64 date_from = 0, int64 date_to = 0) {
 		current_query = query;
 		current_match_case = match_case;
 		current_whole_words = whole_words;
+		current_fuzzy = fuzzy;
 		current_sort_criteria = sort_criteria;
 		current_sort_direction = sort_direction;
 		current_date_from = date_from;
@@ -383,7 +386,7 @@ public class ResultsListView : Gtk.Box {
 		list_model.clear();
 		displayed_paths.remove_all();
 
-		var results = db.search_images(query, match_case, whole_words,
+		var results = db.search_images(query, match_case, whole_words, fuzzy,
 																	 sort_criteria, sort_direction,
 																	 date_from, date_to);
 		if(results == null || results.length == 0) {
@@ -503,9 +506,15 @@ public class ResultsListView : Gtk.Box {
 	}
 
 // Highlight the first matching occurrence of the query in @text using Pango markup.
-	private string highlight_query(string text, string query, bool match_case, bool whole_words) {
+	private string highlight_query(string text, string query, bool match_case, bool whole_words, bool fuzzy) {
 		if(query.length == 0) {
 			return Markup.escape_text(text);
+		}
+
+		// Fuzzy results are ranked on a match that can be scattered across the
+		// text, so the characters that matched get bolded individually instead.
+		if(fuzzy && !whole_words) {
+			return highlight_fuzzy_match(text, query, match_case);
 		}
 
 		string q = match_case ? query : query.down();
@@ -549,5 +558,35 @@ public class ResultsListView : Gtk.Box {
 			Markup.escape_text(match),
 			Markup.escape_text(after)
 		);
+	}
+
+// Bold the characters a fuzzy query matched, merging characters that landed next
+// to each other so a query that did hit a substring still reads as one bold run.
+	private string highlight_fuzzy_match(string text, string query, bool match_case) {
+		var match = FuzzyMatcher.match(FuzzyMatcher.prepare_query(query, match_case), text, match_case);
+		if(match == null) {
+			return Markup.escape_text(text);
+		}
+
+		var markup = new GLib.StringBuilder();
+		int copied = 0;
+		int i = 0;
+		while(i < match.positions.length) {
+			int run_start = match.positions[i];
+			int run_end = run_start + FuzzyMatcher.char_length_at(text, run_start);
+			i++;
+			while(i < match.positions.length && match.positions[i] == run_end) {
+				run_end = match.positions[i] + FuzzyMatcher.char_length_at(text, match.positions[i]);
+				i++;
+			}
+
+			markup.append(Markup.escape_text(text.substring(copied, run_start - copied)));
+			markup.append("<b>");
+			markup.append(Markup.escape_text(text.substring(run_start, run_end - run_start)));
+			markup.append("</b>");
+			copied = run_end;
+		}
+		markup.append(Markup.escape_text(text.substring(copied)));
+		return markup.str;
 	}
 }
