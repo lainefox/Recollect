@@ -8,7 +8,8 @@
 #
 # Usage: check-version.sh [VERSION] [BUNDLE]
 #
-#   VERSION  expected version, defaults to the current git tag
+#   VERSION  expected version, with or without a leading "v"; defaults to the
+#            tag being built
 #   BUNDLE   optional .flatpak bundle to inspect as well
 #
 # Exits non-zero on a mismatch. Missing inspection tools are reported as a
@@ -22,8 +23,8 @@ metainfo="$root/data/$app_id.metainfo.xml.in"
 version=${1:-}
 if [ -z "$version" ]; then
 	version=${GITHUB_REF_NAME:-$(git -C "$root" describe --tags --abbrev=0)}
-	version=${version#v}
 fi
+version=${version#v}
 
 bundle=${2:-}
 status=0
