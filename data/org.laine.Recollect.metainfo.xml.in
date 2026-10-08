@@ -15,6 +15,16 @@
 		<!-- Release timestamps are full ISO 8601 date-times: flatpak and the
 		     software centres pick the app version from the newest <release>, and
 		     entries sharing only a date are ambiguous to sort. -->
+		<release version="1.4.0" date="2026-10-08T14:01:00Z">
+			<description>
+				<ul>
+					<li>Update the flatpak to the GNOME 51 runtime</li>
+					<li>Update bundled leptonica to 1.87.0 and Tesseract to 5.5.3</li>
+					<li>Use the glycin image loaders from the runtime instead of bundling our own copy</li>
+					<li>Fix the development profile so a Devel build can be compiled</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.3.0" date="2026-09-25T17:35:59Z">
 			<description>
 				<ul>
