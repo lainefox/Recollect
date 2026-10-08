@@ -30,10 +30,10 @@ Recollect watches your chosen folders and runs each image through Tesseract OCR 
 
 ## Installation
 
-Precompiled flatpak bundles are attached to each [GitHub release](https://github.com/lainefox/Recollect/releases). Download `recollect.flatpak` and install it:
+Precompiled flatpak bundles are attached to each [GitHub release](https://github.com/lainefox/Recollect/releases). Download `recollect.flatpak` and install it — the same command updates an already-installed copy:
 
 ```bash
-flatpak install --user recollect.flatpak
+flatpak install --user --or-update recollect.flatpak
 ```
 
 ## Building from source
@@ -57,6 +57,28 @@ meson install -C build
 ```
 
 The binary is installed to `~/.local/bin/recollect`.
+
+### Flatpak
+
+The manifests live in `build-aux/flatpak/`. The development one builds the same
+modules with `-Dprofile=development`, so it installs as `org.laine.Recollect.Devel`
+and runs alongside the release without touching it:
+
+```bash
+# Release build (org.laine.Recollect)
+flatpak-builder --user --install-deps-from=flathub --force-clean --install build/flatpak build-aux/flatpak/org.laine.Recollect.json
+
+# Development build (org.laine.Recollect.Devel)
+flatpak-builder --user --install-deps-from=flathub --force-clean --install build/flatpak-devel build-aux/flatpak/org.laine.Recollect.Devel.json
+
+flatpak run org.laine.Recollect.Devel
+```
+
+Remove a development build and its data with:
+
+```bash
+flatpak uninstall --user --delete-data org.laine.Recollect.Devel
+```
 
 ## Troubleshooting
 
