@@ -62,14 +62,17 @@ The binary is installed to `~/.local/bin/recollect`.
 
 The manifests live in `build-aux/flatpak/`. The development one builds the same
 modules with `-Dprofile=development`, so it installs as `org.laine.Recollect.Devel`
-and runs alongside the release without touching it:
+and runs alongside the release without touching it. Both the build directory and
+the state directory live under `~/.cache/`, outside the repository: a `dir` source
+copies the whole repo into the build, so anything you leave in it (including the
+previous flatpak output) would be shipped along.
 
 ```bash
 # Release build (org.laine.Recollect)
-flatpak-builder --user --install-deps-from=flathub --force-clean --install build/flatpak build-aux/flatpak/org.laine.Recollect.json
+flatpak-builder --user --install-deps-from=flathub --force-clean --state-dir=~/.cache/recollect-flatpak/state --install ~/.cache/recollect-flatpak/release build-aux/flatpak/org.laine.Recollect.json
 
 # Development build (org.laine.Recollect.Devel)
-flatpak-builder --user --install-deps-from=flathub --force-clean --install build/flatpak-devel build-aux/flatpak/org.laine.Recollect.Devel.json
+flatpak-builder --user --install-deps-from=flathub --force-clean --state-dir=~/.cache/recollect-flatpak/state --install ~/.cache/recollect-flatpak/devel build-aux/flatpak/org.laine.Recollect.Devel.json
 
 flatpak run org.laine.Recollect.Devel
 ```
