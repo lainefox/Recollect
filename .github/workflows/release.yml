@@ -13,7 +13,7 @@ jobs:
       image: fedora:latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Check that the sources agree on the version
         run: build-aux/ci/check-version.sh "${{ github.ref_name }}"
@@ -45,7 +45,7 @@ jobs:
           tar -czf "$GITHUB_WORKSPACE/recollect-${{ github.ref_name }}.tar.gz" .
 
       - name: Upload native tarball artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: native-tarball
           path: recollect-${{ github.ref_name }}.tar.gz
@@ -58,7 +58,7 @@ jobs:
       options: --privileged
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build
         uses: bilelmoussaoui/flatpak-github-actions/flatpak-builder@v6
@@ -72,7 +72,7 @@ jobs:
         run: build-aux/ci/check-version.sh "${{ github.ref_name }}" recollect.flatpak
 
       - name: Upload flatpak artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: flatpak-bundle
           path: recollect.flatpak
@@ -85,15 +85,15 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Download native tarball
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: native-tarball
 
       - name: Download flatpak bundle
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: flatpak-bundle
 
@@ -123,7 +123,7 @@ jobs:
           '
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             recollect-${{ github.ref_name }}.tar.gz
