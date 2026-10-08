@@ -70,7 +70,7 @@ recollect_vapidir = join_paths(meson.current_source_dir(), 'Vapi')
 # Compile GResources as a separate .gresource file (installed to pkgdatadir)
 recollect_resources = gnome.compile_resources(
   application_id,
-  '../data/' + application_id + '.gresource.xml',
+  '../data/' + base_id + '.gresource.xml',
   gresource_bundle: true,
   source_dir: ['../data'],
   install: true,

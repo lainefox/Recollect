@@ -1,0 +1,80 @@
+{
+	"app-id": "org.laine.Recollect.Devel",
+	"runtime": "org.gnome.Platform",
+	"runtime-version": "51",
+	"sdk": "org.gnome.Sdk",
+	"command": "recollect",
+	"finish-args": [
+		"--share=ipc",
+		"--socket=wayland",
+		"--socket=x11",
+		"--device=dri",
+		"--share=network",
+		"--filesystem=home",
+		"--talk-name=org.freedesktop.portal.FileChooser",
+		"--talk-name=org.freedesktop.portal.OpenURI",
+		"--talk-name=org.freedesktop.FileManager1",
+		"--env=TESSDATA_PREFIX=/app/share/tessdata"
+	],
+	"build-options": {
+		"buildtype": "release",
+		"build-args": [
+			"--share=network"
+		]
+	},
+	"modules": [
+		{
+			"name": "leptonica",
+			"buildsystem": "autotools",
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://github.com/DanBloomberg/leptonica/releases/download/1.87.0/leptonica-1.87.0.tar.gz",
+					"sha256": "c73363397f96eb1295602bf44d708a994ad42046c791bf03ea0505d829bdb6a7"
+				}
+			]
+		},
+		{
+			"name": "tesseract",
+			"buildsystem": "autotools",
+			"config-opts": [
+				"--disable-doc"
+			],
+			"post-install": [
+				"install -Dm644 eng.traineddata $FLATPAK_DEST/share/tessdata/eng.traineddata",
+				"install -Dm644 osd.traineddata $FLATPAK_DEST/share/tessdata/osd.traineddata"
+			],
+			"sources": [
+				{
+					"type": "archive",
+					"url": "https://github.com/tesseract-ocr/tesseract/archive/5.5.3.tar.gz",
+					"sha256": "9218e62793116d42a9f6d14cd9348518b27f382096eea3d0f2d1a24616bb5884"
+				},
+				{
+					"type": "file",
+					"url": "https://github.com/tesseract-ocr/tessdata_fast/raw/main/eng.traineddata",
+					"sha256": "7d4322bd2a7749724879683fc3912cb542f19906c83bcc1a52132556427170b2"
+				},
+				{
+					"type": "file",
+					"url": "https://github.com/tesseract-ocr/tessdata_fast/raw/main/osd.traineddata",
+					"sha256": "9cf5d576fcc47564f11265841e5ca839001e7e6f38ff7f7aacf46d15a96b00ff"
+				}
+			]
+		},
+		{
+			"name": "recollect",
+			"buildsystem": "meson",
+			"config-opts": [
+				"-Dprofile=development",
+				"-Dupdate-checker=true"
+			],
+			"sources": [
+				{
+					"type": "dir",
+					"path": "../../"
+				}
+			]
+		}
+	]
+}
