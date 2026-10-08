@@ -6,6 +6,7 @@ _build/
 
 # Flatpak build artifacts
 .flatpak-state/
+.flatpak-builder/
 *.flatpak
 
 # Meson build artifacts
