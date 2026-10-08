@@ -15,6 +15,15 @@
 		<!-- Release timestamps are full ISO 8601 date-times: flatpak and the
 		     software centres pick the app version from the newest <release>, and
 		     entries sharing only a date are ambiguous to sort. -->
+		<release version="1.4.1" date="2026-10-08T14:56:14Z">
+			<description>
+				<ul>
+					<li>Build the flatpak with release optimizations — it was silently compiled in debug mode, so search and the UI are now noticeably faster</li>
+					<li>Update an already-installed bundle from the README's install command</li>
+					<li>Document building the release and development flatpaks from source</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.4.0" date="2026-10-08T14:01:00Z">
 			<description>
 				<ul>
