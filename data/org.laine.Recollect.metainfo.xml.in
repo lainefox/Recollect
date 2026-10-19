@@ -15,6 +15,13 @@
 		<!-- Release timestamps are full ISO 8601 date-times: flatpak and the
 		     software centres pick the app version from the newest <release>, and
 		     entries sharing only a date are ambiguous to sort. -->
+		<release version="1.4.2" date="2026-10-19T10:35:22Z">
+			<description>
+				<ul>
+					<li>Ask for confirmation before quitting from the menu, so an accidental click no longer closes the app or stops a scan in progress</li>
+				</ul>
+			</description>
+		</release>
 		<release version="1.4.1" date="2026-10-08T14:56:14Z">
 			<description>
 				<ul>

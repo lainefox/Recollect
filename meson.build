@@ -1,5 +1,5 @@
 project('recollect', 'vala',
-        version: '1.4.1',
+        version: '1.4.2',
 	license: 'GPL-3.0',
 )
 
