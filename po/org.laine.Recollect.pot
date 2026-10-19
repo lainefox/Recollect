@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: org.laine.Recollect\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-02 21:48+0300\n"
+"POT-Creation-Date: 2026-10-19 13:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,218 +17,233 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/Application.vala:255 src/MainWindow.vala:80
+#: src/Application.vala:271
+msgid "Quit Recollect?"
+msgstr ""
+
+#: src/Application.vala:272
+msgid ""
+"Any scan in progress will stop and Recollect will close completely. Choose "
+"Cancel to keep using the app."
+msgstr ""
+
+#: src/Application.vala:274 src/PreferencesDialog.vala:400
+#: src/PreferencesDialog.vala:442 src/ChangelogDialog.vala:23
+msgid "Cancel"
+msgstr ""
+
+#: src/Application.vala:275 src/Application.vala:368 src/MainWindow.vala:182
+msgid "Quit"
+msgstr ""
+
+#: src/Application.vala:289 src/MainWindow.vala:81
 msgid "Recollect"
 msgstr ""
 
-#: src/Application.vala:260
+#: src/Application.vala:294
 msgid "Search for text inside your images with powerful OCR technology"
 msgstr ""
 
-#: src/Application.vala:274
+#: src/Application.vala:308
 #, c-format
 msgid "Update available: v%s"
 msgstr ""
 
 #. ── View ──
-#: src/Application.vala:275 src/Application.vala:356
+#: src/Application.vala:309 src/Application.vala:390
 msgid "View"
 msgstr ""
 
 #. ── General ──
-#: src/Application.vala:333
+#: src/Application.vala:367
 msgid "General"
 msgstr ""
 
-#: src/Application.vala:334 src/MainWindow.vala:179
-msgid "Quit"
-msgstr ""
-
-#: src/Application.vala:335 src/MainWindow.vala:175
+#: src/Application.vala:369 src/MainWindow.vala:178
 msgid "Preferences"
 msgstr ""
 
-#: src/Application.vala:336
+#: src/Application.vala:370
 msgid "Refresh / Rescan"
 msgstr ""
 
-#: src/Application.vala:337
+#: src/Application.vala:371
 msgid "Open File"
 msgstr ""
 
-#: src/Application.vala:338 src/MainWindow.vala:1179
+#: src/Application.vala:372 src/MainWindow.vala:1247
 msgid "Open Containing Folder"
 msgstr ""
 
 #. ── Search ──
-#: src/Application.vala:342 src/DownloadModelsDialog.vala:90
+#: src/Application.vala:376 src/DownloadModelsDialog.vala:90
 msgid "Search"
 msgstr ""
 
-#: src/Application.vala:343
+#: src/Application.vala:377
 msgid "Focus Search Bar"
 msgstr ""
 
-#: src/Application.vala:344
+#: src/Application.vala:378
 msgid "Clear Search"
 msgstr ""
 
-#: src/Application.vala:345
+#: src/Application.vala:379
 msgid "Search Filters"
 msgstr ""
 
 #. ── Preview ──
-#: src/Application.vala:349
+#: src/Application.vala:383
 msgid "Preview"
 msgstr ""
 
-#: src/Application.vala:350
+#: src/Application.vala:384
 msgid "Focus Preview"
 msgstr ""
 
-#: src/Application.vala:351
+#: src/Application.vala:385
 msgid "Close Preview"
 msgstr ""
 
-#: src/Application.vala:352 src/MainWindow.vala:1180
+#: src/Application.vala:386 src/MainWindow.vala:1248
 msgid "Copy Image"
 msgstr ""
 
-#: src/Application.vala:357
+#: src/Application.vala:391
 msgid "List View"
 msgstr ""
 
-#: src/Application.vala:358
+#: src/Application.vala:392
 msgid "Grid View"
 msgstr ""
 
-#: src/MainWindow.vala:103
+#: src/MainWindow.vala:104
 msgid "Show scan progress and folder details"
 msgstr ""
 
-#: src/MainWindow.vala:112
+#: src/MainWindow.vala:113
 msgid "Search images…"
 msgstr ""
 
-#: src/MainWindow.vala:115
+#: src/MainWindow.vala:116
 msgid "Type to search for text extracted from your images"
 msgstr ""
 
-#: src/MainWindow.vala:122
+#: src/MainWindow.vala:123
 msgid "Search filters"
 msgstr ""
 
-#: src/MainWindow.vala:123
+#: src/MainWindow.vala:124
 msgid "Filter search results by case, diacritics, whole words, or date range"
 msgstr ""
 
-#: src/MainWindow.vala:156
+#: src/MainWindow.vala:159
 msgid "Sort results"
 msgstr ""
 
-#: src/MainWindow.vala:158
+#: src/MainWindow.vala:161
 msgid "Change sort order by name or date, ascending or descending"
 msgstr ""
 
-#: src/MainWindow.vala:176
+#: src/MainWindow.vala:179
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#: src/MainWindow.vala:177
+#: src/MainWindow.vala:180
 msgid "About"
 msgstr ""
 
-#: src/MainWindow.vala:187
+#: src/MainWindow.vala:190
 msgid "List view"
 msgstr ""
 
-#: src/MainWindow.vala:189
+#: src/MainWindow.vala:192
 msgid "Switch to list view with columns for name, text, date and path"
 msgstr ""
 
-#: src/MainWindow.vala:194
+#: src/MainWindow.vala:197
 msgid "Grid view"
 msgstr ""
 
-#: src/MainWindow.vala:196
+#: src/MainWindow.vala:199
 msgid "Switch to thumbnail grid view"
 msgstr ""
 
-#: src/MainWindow.vala:233 src/PreferencesDialog.vala:328
+#: src/MainWindow.vala:236 src/PreferencesDialog.vala:338
 msgid "No folders configured"
 msgstr ""
 
-#: src/MainWindow.vala:234
+#: src/MainWindow.vala:237
 msgid "Add folders with images to start scanning"
 msgstr ""
 
-#: src/MainWindow.vala:237 src/MainWindow.vala:696
+#: src/MainWindow.vala:240 src/MainWindow.vala:705
 msgid "Open Settings"
 msgstr ""
 
-#: src/MainWindow.vala:250
+#: src/MainWindow.vala:253
 msgid "No images scanned yet"
 msgstr ""
 
-#: src/MainWindow.vala:251
+#: src/MainWindow.vala:254
 msgid "Add images to your folders or run a scan to get started"
 msgstr ""
 
-#: src/MainWindow.vala:257
+#: src/MainWindow.vala:260
 msgid "Start searching to find text inside your images"
 msgstr ""
 
-#: src/MainWindow.vala:268
+#: src/MainWindow.vala:271
 msgid "Scanning"
 msgstr ""
 
-#: src/MainWindow.vala:274
+#: src/MainWindow.vala:277
 msgid "Scanning images..."
 msgstr ""
 
-#: src/MainWindow.vala:294
+#: src/MainWindow.vala:297
 msgid "Searching..."
 msgstr ""
 
-#: src/MainWindow.vala:326
+#: src/MainWindow.vala:329
 msgid "Close preview"
 msgstr ""
 
-#: src/MainWindow.vala:329
+#: src/MainWindow.vala:332
 msgid "Open containing folder"
 msgstr ""
 
-#: src/MainWindow.vala:332
+#: src/MainWindow.vala:335
 msgid "Open externally"
 msgstr ""
 
-#: src/MainWindow.vala:335
+#: src/MainWindow.vala:338
 msgid "Copy image to clipboard"
 msgstr ""
 
-#: src/MainWindow.vala:546
+#: src/MainWindow.vala:555
 msgid "Scan started"
 msgstr ""
 
-#: src/MainWindow.vala:571 src/MainWindow.vala:928
+#: src/MainWindow.vala:580 src/MainWindow.vala:950
 #, c-format
 msgid "Paused — %d / %d"
 msgstr ""
 
-#: src/MainWindow.vala:572
+#: src/MainWindow.vala:581
 msgid "Scan paused"
 msgstr ""
 
-#: src/MainWindow.vala:577 src/MainWindow.vala:930
+#: src/MainWindow.vala:586 src/MainWindow.vala:952
 #, c-format
 msgid "%d / %d"
 msgstr ""
 
-#: src/MainWindow.vala:578
+#: src/MainWindow.vala:587
 msgid "Scan resumed"
 msgstr ""
 
-#: src/MainWindow.vala:674
+#: src/MainWindow.vala:683
 #, c-format
 msgid "Scan complete: %d / %d"
 msgstr ""
@@ -236,341 +251,344 @@ msgstr ""
 #. Clear popover rows since scan is done
 #. Final full refresh to ensure completeness, preserving any
 #. active search query(important after a cleanup run).
-#: src/MainWindow.vala:684
+#: src/MainWindow.vala:693
 #, c-format
 msgid "Scan complete: %d images processed"
 msgstr ""
 
-#: src/MainWindow.vala:691
+#: src/MainWindow.vala:700
 #, c-format
 msgid "Scan error: %s"
 msgstr ""
 
-#: src/MainWindow.vala:695
+#: src/MainWindow.vala:704
 msgid ""
 "No OCR language models installed — download one in Settings to enable "
 "scanning"
 msgstr ""
 
-#: src/MainWindow.vala:1008
+#: src/MainWindow.vala:1030
 msgid "Paused"
 msgstr ""
 
-#: src/MainWindow.vala:1151
+#: src/MainWindow.vala:1219
 msgid "Image copied to clipboard"
 msgstr ""
 
-#: src/MainWindow.vala:1155
+#: src/MainWindow.vala:1223
 msgid "Failed to copy image"
 msgstr ""
 
-#: src/MainWindow.vala:1178
+#: src/MainWindow.vala:1246
 msgid "Open Externally"
 msgstr ""
 
-#: src/PreferencesDialog.vala:98
+#: src/PreferencesDialog.vala:103
 msgid "_Folders"
 msgstr ""
 
 #. Folder group — same pattern as PreferencesDialog
-#: src/PreferencesDialog.vala:102 src/OnboardingDialog.vala:333
+#: src/PreferencesDialog.vala:107 src/OnboardingDialog.vala:333
 msgid "Scan Paths"
 msgstr ""
 
-#: src/PreferencesDialog.vala:112 src/OnboardingDialog.vala:339
+#: src/PreferencesDialog.vala:117 src/OnboardingDialog.vala:339
 msgid "Add Folder"
 msgstr ""
 
 #. Hidden folders option belongs with folder configuration
-#: src/PreferencesDialog.vala:120
+#: src/PreferencesDialog.vala:125
 msgid "Scan Hidden Folders"
 msgstr ""
 
-#: src/PreferencesDialog.vala:121
+#: src/PreferencesDialog.vala:126
 msgid "Include hidden(dot-prefixed) files and folders during scanning"
 msgstr ""
 
-#: src/PreferencesDialog.vala:125
+#: src/PreferencesDialog.vala:130
 msgid "Options"
 msgstr ""
 
-#: src/PreferencesDialog.vala:166 src/OnboardingDialog.vala:360
+#: src/PreferencesDialog.vala:171 src/OnboardingDialog.vala:360
 #, c-format
 msgid "%u files, %u subfolders"
 msgstr ""
 
-#: src/PreferencesDialog.vala:168 src/OnboardingDialog.vala:362
+#: src/PreferencesDialog.vala:173 src/OnboardingDialog.vala:362
 msgid "1 file"
 msgstr ""
 
-#: src/PreferencesDialog.vala:170 src/OnboardingDialog.vala:364
+#: src/PreferencesDialog.vala:175 src/OnboardingDialog.vala:364
 #, c-format
 msgid "%u files"
 msgstr ""
 
-#: src/PreferencesDialog.vala:177 src/OnboardingDialog.vala:371
+#: src/PreferencesDialog.vala:182 src/OnboardingDialog.vala:371
 msgid "Open folder"
 msgstr ""
 
-#: src/PreferencesDialog.vala:193 src/OnboardingDialog.vala:387
+#: src/PreferencesDialog.vala:198 src/OnboardingDialog.vala:387
 msgid "Remove folder"
 msgstr ""
 
-#: src/PreferencesDialog.vala:218
+#: src/PreferencesDialog.vala:223
 msgid "Select Folders to Scan"
 msgstr ""
 
-#: src/PreferencesDialog.vala:253
+#: src/PreferencesDialog.vala:258
 #, c-format
 msgid "a subfolder of %s which is already added"
 msgstr ""
 
-#: src/PreferencesDialog.vala:259
+#: src/PreferencesDialog.vala:264
 #, c-format
 msgid "a parent of %s which is already added"
 msgstr ""
 
-#: src/PreferencesDialog.vala:267 src/OnboardingDialog.vala:469
+#: src/PreferencesDialog.vala:272 src/OnboardingDialog.vala:469
 #, c-format
 msgid "Folder already added: %s"
 msgstr ""
 
-#: src/PreferencesDialog.vala:269 src/OnboardingDialog.vala:471
+#: src/PreferencesDialog.vala:274 src/OnboardingDialog.vala:471
 #, c-format
 msgid "%s is %s"
 msgstr ""
 
-#: src/PreferencesDialog.vala:299
+#: src/PreferencesDialog.vala:304
 msgid "_General"
 msgstr ""
 
-#: src/PreferencesDialog.vala:303
+#: src/PreferencesDialog.vala:308
 msgid "Behavior"
 msgstr ""
 
-#: src/PreferencesDialog.vala:306
+#: src/PreferencesDialog.vala:311
 msgid "Run in Background"
 msgstr ""
 
-#: src/PreferencesDialog.vala:307
+#: src/PreferencesDialog.vala:312
 msgid "Keep the app running and scanning when the window is closed"
 msgstr ""
 
-#: src/PreferencesDialog.vala:311
+#: src/PreferencesDialog.vala:316
 msgid "Incremental Scanning"
 msgstr ""
 
-#: src/PreferencesDialog.vala:312
+#: src/PreferencesDialog.vala:317
 msgid "Monitor folders for file changes"
 msgstr ""
 
-#: src/PreferencesDialog.vala:318
+#: src/PreferencesDialog.vala:321
+msgid "Start at Login"
+msgstr ""
+
+#: src/PreferencesDialog.vala:322 data/org.laine.Recollect.gschema.xml.in:125
+msgid "Launch Recollect in the background when you log in"
+msgstr ""
+
+#: src/PreferencesDialog.vala:328
 msgid "Maintenance"
 msgstr ""
 
-#: src/PreferencesDialog.vala:320
+#: src/PreferencesDialog.vala:330
 msgid "Rescan All Folders"
 msgstr ""
 
-#: src/PreferencesDialog.vala:321
+#: src/PreferencesDialog.vala:331
 msgid "Re-process all images in configured folders"
 msgstr ""
 
-#: src/PreferencesDialog.vala:323
+#: src/PreferencesDialog.vala:333
 msgid "Rescan"
 msgstr ""
 
 #. stop_scan() joins the background thread synchronously,
 #. so calling start_scan immediately is safe — no delay needed.
 #. force = true to re-process all files
-#: src/PreferencesDialog.vala:340
+#: src/PreferencesDialog.vala:350
 #, c-format
 msgid "Rescan started for %u folder(s)"
 msgstr ""
 
 #. Clean up deleted files row
-#: src/PreferencesDialog.vala:351
+#: src/PreferencesDialog.vala:361
 msgid "Clean Up Deleted Files"
 msgstr ""
 
-#: src/PreferencesDialog.vala:352
+#: src/PreferencesDialog.vala:362
 msgid "Remove database entries for images that no longer exist on disk"
 msgstr ""
 
-#: src/PreferencesDialog.vala:354
+#: src/PreferencesDialog.vala:364
 msgid "Clean Up"
 msgstr ""
 
-#: src/PreferencesDialog.vala:358
+#: src/PreferencesDialog.vala:368
 msgid "A scan or cleanup is already running"
 msgstr ""
 
-#: src/PreferencesDialog.vala:367
+#: src/PreferencesDialog.vala:377
 msgid "Cleaning up deleted files…"
 msgstr ""
 
 #. Purge database row(dev/testing)
-#: src/PreferencesDialog.vala:378
+#: src/PreferencesDialog.vala:388
 msgid "Purge Database"
 msgstr ""
 
-#: src/PreferencesDialog.vala:379
+#: src/PreferencesDialog.vala:389
 msgid "Delete all indexed images and folders"
 msgstr ""
 
-#: src/PreferencesDialog.vala:382
+#: src/PreferencesDialog.vala:392
 msgid "Purge All Data"
 msgstr ""
 
-#: src/PreferencesDialog.vala:387
+#: src/PreferencesDialog.vala:397
 msgid "Purge All Data?"
 msgstr ""
 
-#: src/PreferencesDialog.vala:388
+#: src/PreferencesDialog.vala:398
 msgid ""
 "This will permanently delete all indexed images and folders from the "
 "database. The image files on disk will not be affected."
 msgstr ""
 
-#: src/PreferencesDialog.vala:390 src/PreferencesDialog.vala:432
-#: src/ChangelogDialog.vala:23
-msgid "Cancel"
-msgstr ""
-
-#: src/PreferencesDialog.vala:391
+#: src/PreferencesDialog.vala:401
 msgid "Purge"
 msgstr ""
 
 #. Clear GSettings too
-#: src/PreferencesDialog.vala:404
+#: src/PreferencesDialog.vala:414
 msgid "Database purged — all entries removed"
 msgstr ""
 
 #. Reset & start over row
-#: src/PreferencesDialog.vala:420
+#: src/PreferencesDialog.vala:430
 msgid "Reset and Start Over"
 msgstr ""
 
-#: src/PreferencesDialog.vala:421
+#: src/PreferencesDialog.vala:431
 msgid "Reset all settings and show the setup wizard on next launch"
 msgstr ""
 
-#: src/PreferencesDialog.vala:423 src/PreferencesDialog.vala:433
+#: src/PreferencesDialog.vala:433 src/PreferencesDialog.vala:443
 msgid "Reset"
 msgstr ""
 
 #. Confirm with a dialog
-#: src/PreferencesDialog.vala:429
+#: src/PreferencesDialog.vala:439
 msgid "Reset All Settings?"
 msgstr ""
 
-#: src/PreferencesDialog.vala:430
+#: src/PreferencesDialog.vala:440
 msgid ""
 "This will reset all preferences and show the onboarding wizard on the next "
 "launch. Your scanned data will not be deleted."
 msgstr ""
 
-#: src/PreferencesDialog.vala:465
+#: src/PreferencesDialog.vala:475
 msgid "Updates"
 msgstr ""
 
 #. Toggle to enable/disable update checking entirely.
-#: src/PreferencesDialog.vala:469
+#: src/PreferencesDialog.vala:479
 msgid "Check for Updates"
 msgstr ""
 
-#: src/PreferencesDialog.vala:470
+#: src/PreferencesDialog.vala:480
 msgid "Check for newer versions of Recollect on startup"
 msgstr ""
 
-#: src/PreferencesDialog.vala:482 src/PreferencesDialog.vala:566
+#: src/PreferencesDialog.vala:492 src/PreferencesDialog.vala:576
 msgid "Checking for Updates…"
 msgstr ""
 
-#: src/PreferencesDialog.vala:483 src/PreferencesDialog.vala:567
+#: src/PreferencesDialog.vala:493 src/PreferencesDialog.vala:577
 msgid "Contacting GitHub…"
 msgstr ""
 
 #. "Check Now" button — shown when idle (up to date or error).
-#: src/PreferencesDialog.vala:494
+#: src/PreferencesDialog.vala:504
 msgid "Check Now"
 msgstr ""
 
 #. "Download" button — shown when an update is available. Opens the
 #. GitHub release page straight away.
-#: src/PreferencesDialog.vala:504 src/ChangelogDialog.vala:30
+#: src/PreferencesDialog.vala:514 src/ChangelogDialog.vala:30
 msgid "Download"
 msgstr ""
 
 #. Debug button — re-runs the check (dev/testing).
-#: src/PreferencesDialog.vala:520
+#: src/PreferencesDialog.vala:530
 msgid "Debug"
 msgstr ""
 
-#: src/PreferencesDialog.vala:582
+#: src/PreferencesDialog.vala:592
 msgid "Update Check Failed"
 msgstr ""
 
-#: src/PreferencesDialog.vala:595
+#: src/PreferencesDialog.vala:605
 msgid "Update Available"
 msgstr ""
 
-#: src/PreferencesDialog.vala:596
+#: src/PreferencesDialog.vala:606
 #, c-format
 msgid "A newer version (v%s) is available. Click here to see the changelog."
 msgstr ""
 
-#: src/PreferencesDialog.vala:602
+#: src/PreferencesDialog.vala:612
 msgid "Up to Date"
 msgstr ""
 
-#: src/PreferencesDialog.vala:603
+#: src/PreferencesDialog.vala:613
 msgid "You are running the latest version."
 msgstr ""
 
-#: src/PreferencesDialog.vala:614
+#: src/PreferencesDialog.vala:624
 msgid "_OCR"
 msgstr ""
 
-#: src/PreferencesDialog.vala:618 src/Views/ImagePreviewSidebar.vala:136
+#: src/PreferencesDialog.vala:628 src/Views/ImagePreviewSidebar.vala:136
 msgid "Models"
 msgstr ""
 
-#: src/PreferencesDialog.vala:625 src/DownloadModelsDialog.vala:32
+#: src/PreferencesDialog.vala:635 src/DownloadModelsDialog.vala:32
 msgid "Download Models"
 msgstr ""
 
-#: src/PreferencesDialog.vala:709 src/PreferencesDialog.vala:808
-#: src/DownloadModelsDialog.vala:432
+#: src/PreferencesDialog.vala:723 src/PreferencesDialog.vala:840
+#: src/DownloadModelsDialog.vala:439
 msgid "Fast"
 msgstr ""
 
-#: src/PreferencesDialog.vala:711 src/PreferencesDialog.vala:811
-#: src/DownloadModelsDialog.vala:435
+#: src/PreferencesDialog.vala:725 src/PreferencesDialog.vala:843
+#: src/DownloadModelsDialog.vala:442
 msgid "Balanced"
 msgstr ""
 
-#: src/PreferencesDialog.vala:712 src/PreferencesDialog.vala:809
-#: src/DownloadModelsDialog.vala:433
+#: src/PreferencesDialog.vala:726 src/PreferencesDialog.vala:841
+#: src/DownloadModelsDialog.vala:440
 msgid "Best"
 msgstr ""
 
-#: src/PreferencesDialog.vala:716 src/PreferencesDialog.vala:719
+#: src/PreferencesDialog.vala:730 src/PreferencesDialog.vala:733
 #, c-format
 msgid "%s (%s)"
 msgstr ""
 
 #. Badge(system) or delete button(user).
-#: src/PreferencesDialog.vala:725
+#: src/PreferencesDialog.vala:738
 msgid "System"
 msgstr ""
 
-#: src/PreferencesDialog.vala:729
+#: src/PreferencesDialog.vala:742
 msgid ""
 "Managed by your system's package manager or preinstalled with the system"
 msgstr ""
 
-#: src/PreferencesDialog.vala:734
+#: src/PreferencesDialog.vala:747
 msgid "Delete this downloaded model"
 msgstr ""
 
@@ -578,7 +596,7 @@ msgstr ""
 msgid "Welcome to Recollect"
 msgstr ""
 
-#: src/OnboardingDialog.vala:74 src/Views/FilterPopover.vala:107
+#: src/OnboardingDialog.vala:74 src/Views/FilterPopover.vala:133
 msgid "Back"
 msgstr ""
 
@@ -652,37 +670,37 @@ msgstr ""
 msgid "New files"
 msgstr ""
 
-#: src/Services/TesseractModelService.vala:95
-#: src/Services/UpdateService.vala:71 src/DownloadModelsDialog.vala:161
+#: src/Services/TesseractModelService.vala:105
+#: src/Services/UpdateService.vala:69 src/DownloadModelsDialog.vala:161
 msgid "No Internet Connection"
 msgstr ""
 
-#: src/Services/TesseractModelService.vala:280
+#: src/Services/TesseractModelService.vala:292
 msgid "Download denied(403). The model file may not be available."
 msgstr ""
 
-#: src/Services/TesseractModelService.vala:282
+#: src/Services/TesseractModelService.vala:294
 msgid "Model file not found(404). It may have been removed."
 msgstr ""
 
-#: src/Services/TesseractModelService.vala:331
-#: src/Services/UpdateService.vala:144
+#: src/Services/TesseractModelService.vala:343
+#: src/Services/UpdateService.vala:142
 msgid "GitHub API rate limit reached. Please wait a while before trying again."
 msgstr ""
 
-#: src/Services/TesseractModelService.vala:333
+#: src/Services/TesseractModelService.vala:345
 msgid "Redirect not followed."
 msgstr ""
 
-#: src/Services/TesseractModelService.vala:380
+#: src/Services/TesseractModelService.vala:392
 msgid "Invalid response from GitHub API"
 msgstr ""
 
-#: src/Services/UpdateService.vala:146
+#: src/Services/UpdateService.vala:144
 msgid "No releases found for this project."
 msgstr ""
 
-#: src/Services/UpdateService.vala:163 src/Services/UpdateService.vala:167
+#: src/Services/UpdateService.vala:161 src/Services/UpdateService.vala:165
 msgid "Unexpected response from GitHub."
 msgstr ""
 
@@ -731,88 +749,96 @@ msgstr ""
 msgid "%lld bytes"
 msgstr ""
 
-#: src/Utils/Utils.vala:56 src/DownloadModelsDialog.vala:455
+#: src/Utils/Utils.vala:56 src/DownloadModelsDialog.vala:462
 #, c-format
 msgid "%.1f KB"
 msgstr ""
 
-#: src/Utils/Utils.vala:58 src/DownloadModelsDialog.vala:456
+#: src/Utils/Utils.vala:58 src/DownloadModelsDialog.vala:463
 #, c-format
 msgid "%.1f MB"
 msgstr ""
 
-#: src/Utils/Utils.vala:60 src/DownloadModelsDialog.vala:457
+#: src/Utils/Utils.vala:60 src/DownloadModelsDialog.vala:464
 #, c-format
 msgid "%.1f GB"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:45
+#: src/Views/FilterPopover.vala:56
 msgid "Match case"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:47
+#: src/Views/FilterPopover.vala:58
 msgid "Distinguish between upper and lower case"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:50 data/org.laine.Recollect.gschema.xml.in:97
+#: src/Views/FilterPopover.vala:61 data/org.laine.Recollect.gschema.xml.in:97
 msgid "Match diacritics"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:52
+#: src/Views/FilterPopover.vala:63
 msgid "Distinguish between accented and unaccented characters"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:55
+#: src/Views/FilterPopover.vala:66
 msgid "Whole words"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:57
+#: src/Views/FilterPopover.vala:68
 msgid "Only match whole words, not substrings"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:67
+#: src/Views/FilterPopover.vala:71
+msgid "Fuzzy search"
+msgstr ""
+
+#: src/Views/FilterPopover.vala:73
+msgid "Match characters in any order, ranking the closest matches first"
+msgstr ""
+
+#: src/Views/FilterPopover.vala:93
 msgid "Before:"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:68 src/Views/FilterPopover.vala:87
-#: src/Views/FilterPopover.vala:189 src/Views/FilterPopover.vala:196
-#: src/Views/FilterPopover.vala:227 src/Views/FilterPopover.vala:228
+#: src/Views/FilterPopover.vala:94 src/Views/FilterPopover.vala:113
+#: src/Views/FilterPopover.vala:215 src/Views/FilterPopover.vala:222
+#: src/Views/FilterPopover.vala:259 src/Views/FilterPopover.vala:260
 msgid "Not set"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:72
+#: src/Views/FilterPopover.vala:98
 msgid "Show images created before this date"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:79
+#: src/Views/FilterPopover.vala:105
 msgid "Clear before date"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:86
+#: src/Views/FilterPopover.vala:112
 msgid "After:"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:91
+#: src/Views/FilterPopover.vala:117
 msgid "Show images created after this date"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:98
+#: src/Views/FilterPopover.vala:124
 msgid "Clear after date"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:112
+#: src/Views/FilterPopover.vala:138
 msgid "Select date"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:118
+#: src/Views/FilterPopover.vala:144
 msgid "Select"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:145
+#: src/Views/FilterPopover.vala:171
 msgid "Before date"
 msgstr ""
 
-#: src/Views/FilterPopover.vala:154
+#: src/Views/FilterPopover.vala:180
 msgid "After date"
 msgstr ""
 
@@ -826,31 +852,31 @@ msgstr ""
 msgid "Scan progress: %d%%"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:169
+#: src/Views/ResultsListView.vala:170
 msgid "Name"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:197
+#: src/Views/ResultsListView.vala:198
 msgid "No text found"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:206
+#: src/Views/ResultsListView.vala:207
 msgid "Text"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:241 src/Views/ImagePreviewSidebar.vala:126
+#: src/Views/ResultsListView.vala:242 src/Views/ImagePreviewSidebar.vala:126
 msgid "Date"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:271 src/Views/ImagePreviewSidebar.vala:120
+#: src/Views/ResultsListView.vala:272 src/Views/ImagePreviewSidebar.vala:120
 msgid "Path"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:310 src/Views/ResultsGridView.vala:68
+#: src/Views/ResultsListView.vala:311 src/Views/ResultsGridView.vala:68
 msgid "No results found"
 msgstr ""
 
-#: src/Views/ResultsListView.vala:311 src/Views/ResultsGridView.vala:69
+#: src/Views/ResultsListView.vala:312 src/Views/ResultsGridView.vala:69
 msgid "Try adjusting your search or filters"
 msgstr ""
 
@@ -951,7 +977,12 @@ msgstr ""
 msgid "Download %s model"
 msgstr ""
 
-#: src/DownloadModelsDialog.vala:454
+#: src/DownloadModelsDialog.vala:365
+#, c-format
+msgid "Delete %s model"
+msgstr ""
+
+#: src/DownloadModelsDialog.vala:461
 #, c-format
 msgid "%.0f B"
 msgstr ""
@@ -1049,7 +1080,9 @@ msgid "Fuzzy search enabled"
 msgstr ""
 
 #: data/org.laine.Recollect.gschema.xml.in:86
-msgid "Use fuzzy matching when searching image text content"
+msgid ""
+"Match the search characters in any order instead of as a literal substring, "
+"and list the closest matches first"
 msgstr ""
 
 #: data/org.laine.Recollect.gschema.xml.in:91
@@ -1086,4 +1119,8 @@ msgstr ""
 
 #: data/org.laine.Recollect.gschema.xml.in:118
 msgid "Whether to check for newer versions of Recollect on startup"
+msgstr ""
+
+#: data/org.laine.Recollect.gschema.xml.in:124
+msgid "Start at login"
 msgstr ""

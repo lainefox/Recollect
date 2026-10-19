@@ -258,8 +258,29 @@ public class Application : Adw.Application {
 		}
 
 // Action: Quit
+// Confirm first — the window's X button only hides the app (when background
+// scanning is on), so Quit is the only way users actually exit, and a stray
+// click would stop a running scan.
 		private void action_quit() {
-				quit();
+				var parent = get_active_window();
+				if(parent == null) {
+						parent = main_window;
+				}
+
+				var dialog = new Adw.AlertDialog(
+						_("Quit Recollect?"),
+						_("Any scan in progress will stop and Recollect will close completely. Choose Cancel to keep using the app.")
+				);
+				dialog.add_response("cancel", _("Cancel"));
+				dialog.add_response("quit", _("Quit"));
+				dialog.set_default_response("cancel");
+				dialog.set_close_response("cancel");
+				dialog.response.connect((response) => {
+						if(response == "quit") {
+								quit();
+						}
+				});
+				dialog.present(parent);
 		}
 
 // Action: Show About dialog
